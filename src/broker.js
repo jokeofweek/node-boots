@@ -1,5 +1,5 @@
 var sys = require('sys'),
-	Middleware = require('./middleware/middleware.js').Middleware;
+    Middleware = require('./middleware/middleware.js').Middleware;
 
 /**
  * The basic STOMP broker.
@@ -8,19 +8,19 @@ var sys = require('sys'),
  * @constructor
  */
 function Broker(sessionFactory) {
-	// Call middleware constructor.
-	Middleware.call(this);
+  // Call middleware constructor.
+  Middleware.call(this);
 
-	this._sessionFactory = sessionFactory;
+  this._sessionFactory = sessionFactory;
 
-	// Keep layers of middleware.
-	this._middleware = [];
+  // Keep layers of middleware.
+  this._middleware = [];
 
-	// Listen to events.
-	var self = this;
-	this._sessionFactory.on('request', function(session, request) {
-		(self._toNextMethod('onRequest'))(session, request);
-	});
+  // Listen to events.
+  var self = this;
+  this._sessionFactory.on('request', function(session, request) {
+    (self._toNextMethod('onRequest'))(session, request);
+  });
 };
 sys.inherits(Broker, Middleware);
 
@@ -29,9 +29,9 @@ sys.inherits(Broker, Middleware);
  * Add a layer of middleware to the broker. Note these are executed in order
  * of being added.
  * @param {Middleware} middleware The middleware to add.
- */		
+ */    
 Broker.prototype.addMiddleware = function(middleware) {
-	this._middleware.push(middleware);
+  this._middleware.push(middleware);
 };
 
 /**
@@ -42,8 +42,8 @@ Broker.prototype.addMiddleware = function(middleware) {
  *                            the Broker's onRequest is the last to be called.
  */
 Broker.prototype.onRequest = function(session, request, next) {
-	console.log("Broker: ");
-	console.log(request);
+  console.log("Broker: ");
+  console.log(request);
 };
 
 /**
@@ -51,7 +51,7 @@ Broker.prototype.onRequest = function(session, request, next) {
  * @return {function} The function for building a new session.
  */
 Broker.prototype.getSessionBuilder = function() {
-	return this._sessionFactory.getSession.bind(this._sessionFactory);
+  return this._sessionFactory.getSession.bind(this._sessionFactory);
 };
 
 /**
@@ -65,27 +65,27 @@ Broker.prototype.getSessionBuilder = function() {
  * @private
  */
 Broker.prototype._toNextMethod = function(functionName) {
-	var self = this;
-	var i = 0; 
+  var self = this;
+  var i = 0; 
 
-	var next = function() {
-		var middle;
-		// If we've executed all middleware, then we use the Broker object
-		// as middleware.
-		if (i == self._middleware.length) {
-			middle = self;
-		} else {
-			// Get the next middleware.
-			middle = self._middleware[i];
-			i++;
-		}
-		// Convert args to array and add next.
-		var args = Array.prototype.slice.call(arguments, 0);
-		args.push(next);
-		return middle[functionName].apply(middle, args);
-	}
+  var next = function() {
+    var middle;
+    // If we've executed all middleware, then we use the Broker object
+    // as middleware.
+    if (i == self._middleware.length) {
+      middle = self;
+    } else {
+      // Get the next middleware.
+      middle = self._middleware[i];
+      i++;
+    }
+    // Convert args to array and add next.
+    var args = Array.prototype.slice.call(arguments, 0);
+    args.push(next);
+    return middle[functionName].apply(middle, args);
+  }
 
-	return next;
+  return next;
 };
 
 module.exports.Broker = Broker;

@@ -4,7 +4,7 @@
  *
  * @constructor
  */
-function Middleware() {	
+function Middleware() {  
 };
 
 /**

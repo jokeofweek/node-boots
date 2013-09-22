@@ -1,8 +1,8 @@
-var Broker = require('./src/broker.js').Broker,
+var net = require('net'),
+    Broker = require('./src/broker.js').Broker,
 	Config = require('./config.js'),
 	LoggerMiddleware = require('./src/middleware/logger.js').LoggerMiddleware,
-	SessionFactory = require('./src/sessionfactory.js').SessionFactory,
-	net = require('net');
+	SessionFactory = require('./src/sessionfactory.js').SessionFactory;
 
 var broker = new Broker(new SessionFactory());
 broker.addMiddleware(new LoggerMiddleware());
