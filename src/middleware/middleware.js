@@ -25,7 +25,7 @@ Middleware.prototype.onReceive = function(session, request, next) {
  * @param  {function} next      The function for calling the next middleware
  */
 Middleware.prototype.onSend = function(session, response, callback, next) {
-  next(session, request, callback || function(){});
+  next(session, response, callback || function(){});
 };
 
 module.exports.Middleware = Middleware;
