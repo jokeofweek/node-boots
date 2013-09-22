@@ -9,6 +9,8 @@ var HEADER_TRANSFORMATIONS = [
 
 Object.freeze(HEADER_TRANSFORMATIONS);
 
+// TODO: Should allow for adding to a buffer if a request is incomplete.
+
 /**
  * Tries to build a Request object from a Buffer.
  * @param {Buffer} buffer The request buffer.

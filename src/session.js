@@ -10,6 +10,8 @@ function Session(connection, sessionId) {
 	this._sessionId = sessionId
 
 	this._setupListeners();
+
+	this.emit('connect');
 };
 util.inherits(Session, events.EventEmitter);
 
@@ -17,7 +19,11 @@ Session.prototype._setupListeners = function() {
 	var self = this;
 
 	this._connection.on('data', function(data) {
-		console.log(RequestBuilder(data));
+		var request = RequestBuilder(data);
+		// Only emit the data if the request was valid.
+		if (request) {
+			self.emit('data', request);
+		}
 	});
 };
 
