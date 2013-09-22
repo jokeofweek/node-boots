@@ -1,29 +1,19 @@
-var FrameBuilder = require('../src/framebuilder.js');
+var FrameUtil = require('../src/frameutil.js');
 
 /**
  * Helper function which takes care of converting a string to a buffer and then
  * building a Frame out of it.
  */
 var getFrame = function(str) {
-	return FrameBuilder.FrameBuilder(new Buffer(str));
+	return FrameUtil.buildFrame(new Buffer(str));
 };
 
 // TODO: More tests! 
 
 module.exports = {
-	'testFrameBuilderIsExported': function(test) {
-		test.ok(FrameBuilder.FrameBuilder, 
-			'FrameBuilder.FrameBuilder should be exported.');
-		test.done();
-	},
-	'testHeaderTransformationsIsExported': function(test) {
-		test.ok(FrameBuilder.HEADER_TRANSFORMATIONS, 
-			'FrameBuilder.HEADER_TRANSFORMATIONS should be exported.');
-		test.done();
-	},
-	'testHeaderTransformationsAreFrozen': function(test) {
-		test.ok(Object.isFrozen(FrameBuilder.HEADER_TRANSFORMATIONS),
-			'HEADER_TRANSFORMATIONS should be frozen.');
+	'testBuildFrameIsExported': function(test) {
+		test.ok(FrameUtil.buildFrame, 
+			'FrameUtil.buildFrame should be exported.');
 		test.done();
 	},
 	'testCommandIsExtractedProperly': function(test) {

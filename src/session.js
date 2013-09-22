@@ -1,4 +1,4 @@
-var FrameBuilder = require('./FrameBuilder.js').FrameBuilder,
+var FrameUtil = require('./frameutil.js'),
 	events = require('events'),
 	util = require('util');
 
@@ -19,7 +19,7 @@ Session.prototype._setupListeners = function() {
 	var self = this;
 
 	this._connection.on('data', function(data) {
-		var request = FrameBuilder(data);
+		var request = FrameUtil.buildFrame(data);
 		// Only emit the data if the request was valid.
 		if (request) {
 			self.emit('request', request);

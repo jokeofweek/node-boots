@@ -16,7 +16,7 @@ Object.freeze(HEADER_TRANSFORMATIONS);
  * @param {Buffer} buffer The Frame buffer.
  * @returns {?Frame} A Frame if one could be built, else null.
  */
-FrameBuilder = function(buffer) {
+function buildFrame(buffer) {
 	var command;
 	var headers = {};
 	var body;
@@ -92,7 +92,14 @@ FrameBuilder = function(buffer) {
 	return new Frame(command, headers, body);
 };
 
-module.exports = {
-	'FrameBuilder': FrameBuilder,
-	'HEADER_TRANSFORMATIONS': HEADER_TRANSFORMATIONS
+/**
+ * Builds a Buffer object containing the string representation of a frame.
+ * @param  {Frame} frame The frame to convert.
+ * @return {?Buffer} The buffer if it could be converted, else null.
+ */
+function buildBuffer(frame) {
+	return null;
 };
+
+module.exports.buildFrame = buildFrame;
+module.exports.buildBuffer = buildBuffer;
