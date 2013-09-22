@@ -1,5 +1,5 @@
-var Listener = require('./server/listener.js').Listener,
-	SessionFactory = require('./server/sessionfactory.js').SessionFactory,
+var Listener = require('./src/listener.js').Listener,
+	SessionFactory = require('./src/sessionfactory.js').SessionFactory,
 	Config = require('./config.js'),
 	net = require('net');
 
