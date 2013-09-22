@@ -1,6 +1,6 @@
 var net = require('net'),
     Broker = require('./src/broker.js').Broker,
-  	Config = require('./config.js'),
+    Config = require('./config.js'),
     LoggerMiddleware = require('./src/middleware/logger.js').LoggerMiddleware,
     SessionFactory = require('./src/sessionfactory.js').SessionFactory;
 
