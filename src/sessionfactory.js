@@ -22,8 +22,8 @@ SessionFactory.prototype.getSession = function(connection) {
 
 	// Setup events.
 	var self = this;
-	session.on('data', function(request) {
-		self.emit('data', session, request);
+	session.on('request', function(request) {
+		self.emit('request', session, request);
 	});
 
 	return session;

@@ -1,16 +1,98 @@
+var sys = require('sys'),
+	Middleware = require('./middleware/middleware.js').Middleware;
+
+/**
+ * The basic STOMP broker.
+ * @param {SessionFactory} sessionFactory The session factory for generating new
+ *                                        sessions.
+ * @constructor
+ */
 function Broker(sessionFactory) {
+	// Call middleware constructor.
+	Middleware.call(this);
+
 	this._sessionFactory = sessionFactory;
 
+	// Keep layers of middleware.
+	this._middleware = [];
+
 	// Listen to events.
-	this._sessionFactory.on('data', this._onData.bind(this));
+	this._sessionFactory.on('request', this._onRequest.bind(this));
+};
+sys.inherits(Broker, Middleware);
+
+
+/**
+ * Add a layer of middleware to the broker. Note these are executed in order
+ * of being added.
+ * @param {Middleware} middleware The middleware to add.
+ */		
+Broker.prototype.addMiddleware = function(middleware) {
+	this._middleware.push(middleware);
 };
 
-Broker.prototype._onData = function(session, request) {
+/**
+ * Event handler when a request is received.
+ * @param  {Session} session The session that sent the request.
+ * @param  {Request} request The request that was sent.
+ * @private
+ */
+Broker.prototype._onRequest = function(session, request) {
+	var response = (this._toNextMethod('onRequest'))(session, request);
+};
+
+/**
+ * Handles the request if no other middleware has handled it.
+ * @param  {Session}   session The session that sent the request.
+ * @param  {Request}   request The request that was sent.
+ * @param  {Function} next    The next function, should not be called as
+ *                            the Broker's onRequest is the last to be called.
+ */
+Broker.prototype.onRequest = function(session, request, next) {
+	console.log("Broker: ");
 	console.log(request);
 };
 
+/**
+ * Gets the function for building a new Session object.
+ * @return {function} The function for building a new session.
+ */
 Broker.prototype.getSessionBuilder = function() {
 	return this._sessionFactory.getSession.bind(this._sessionFactory);
+};
+
+/**
+ * Generates the 'next' function which takes care of iterating through 
+ * {@link Middleware} objects and calling the {@link Broker} as a last
+ * middleware.
+ * 
+ * @param  {string} functionName The name of the Middleware function to invoke.
+ * @return {function} The function which will execute a function on each 
+ *                        Middleware until a value is returned.
+ * @private
+ */
+Broker.prototype._toNextMethod = function(functionName) {
+	var self = this;
+	var i = 0; 
+
+	var next = function() {
+		var middle;
+		// If we've executed all middleware, then we use the Broker object
+		// as middleware.
+		if (i == self._middleware.length) {
+			middle = self;
+		} else {
+			// Get the next middleware.
+			middle = self._middleware[i];
+			i++;
+		}
+		// Convert args to array and add next.
+		var args = Array.prototype.slice.call(arguments, 0);
+		args.push(next);
+		return middle[functionName].apply(middle, args);
+	}
+
+	return next;
 };
 
 module.exports.Broker = Broker;
