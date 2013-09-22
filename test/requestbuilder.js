@@ -84,7 +84,7 @@ module.exports = {
 			"CONNECT\n\n\n",
 			"CONNECT\r\n\r\n\r\n",
 			"CONNECT\nk\n\n\0" /* Invalid key:value format */,
-			"CONNECT\nk:v\nk2\n\n\0" /* Invalid key:value format */,
+			"CONNECT\nk:v\nk2\n\n\0" /* Invalid key:value format */,	
 			"CONNECT\r\nk\r\n\r\n\0" /* Invalid key:value format */,
 			"CONNECT\r\nk:v\r\nk2\r\n\r\n\0" /* Invalid key:value format */,
 			"\0",

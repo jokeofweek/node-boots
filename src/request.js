@@ -8,7 +8,7 @@ var HEADER_TRANSFORMATIONS = [
 function Request(command, headers, body) {
 	this._command = command;
 	this._headers = headers || {};
-	this._body = body;
+	this._body = body || "";
 };
 
 Request.prototype.getCommand = function() {
