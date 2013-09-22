@@ -43,10 +43,21 @@ Broker.prototype.addMiddleware = function(middleware) {
  * @override
  */
 Broker.prototype.onReceive = function(session, request, next) {
-  // Just a test.
-  session.sendFrame(new Frame("ERROR", {'version':'1.3,3.3'}, "An error occured."), function() {
-    console.log("Error sent.");
-  });
+  // If the session has no version, then we need to check if this is a
+  // connection request and updat accordingly.
+  if (session.getVersion()) {
+
+  } else {
+    if (request.getCommand() == 'CONNECT') {
+      // Parse out the accepted versions. Note that accept-version is not
+      // obligatory for 1.0, so we can assume 1.0 if no header is present.
+      var acceptedVersions = request.getHeaders()['accept-version'] || '1.0';
+    } else {
+      session.sendFrame(new Frame("ERROR", {}, "Undefined command."), function() {
+        session.close();
+      });
+    }
+  }
 };
 
 /**
