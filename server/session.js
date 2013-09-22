@@ -1,4 +1,4 @@
-var Request = require('./request.js').Request,
+var Request = require('./requestbuilder.js').RequestBuilder,
 	events = require('events'),
 	util = require('util');
 
@@ -17,7 +17,7 @@ Session.prototype._setupListeners = function() {
 	var self = this;
 
 	this._connection.on('data', function(data) {
-		console.log(Request.build(data));
+		console.log(RequestBuilder(data));
 		//console.log(data);
 	});
 };
