@@ -1,10 +1,9 @@
-var HEADER_TRANSFORMATIONS = [
-  [/\\r/g, '\r'],
-  [/\\n/g, '\n'],
-  [/\\c/g, ':'],
-  [/\\\\/g, '\\']
-];
-
+/**
+ * This class represents a STOMP frame.
+ * @param {string} command  The command for the STOMP frame.
+ * @param {?object} headers An optinal map representing headers.
+ * @param {?string} body    An optional frame body.
+ */
 function Frame(command, headers, body) {
   this._command = command;
   this._headers = headers || {};
