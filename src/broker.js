@@ -1,4 +1,5 @@
 var sys = require('sys'),
+    Frame = require('./frame.js').Frame;
     Middleware = require('./middleware/middleware.js').Middleware;
 
 /**
@@ -6,6 +7,7 @@ var sys = require('sys'),
  * @param {SessionFactory} sessionFactory The session factory for generating new
  *                                        sessions.
  * @constructor
+ * @extends {Middleware}
  */
 function Broker(sessionFactory) {
   // Call middleware constructor.
@@ -18,8 +20,11 @@ function Broker(sessionFactory) {
 
   // Listen to events.
   var self = this;
-  this._sessionFactory.on('request', function(session, request) {
-    (self._toNextMethod('onRequest'))(session, request);
+  this._sessionFactory.on('receiveData', function(session, request) {
+    (self._toNextMethod('onReceive'))(session, request);
+  });
+  this._sessionFactory.on('sendData', function(session, request, callback) {
+    (self._toNextMethod('onSend'))(session, request, callback);
   });
 };
 sys.inherits(Broker, Middleware);
@@ -35,15 +40,21 @@ Broker.prototype.addMiddleware = function(middleware) {
 };
 
 /**
- * Handles the request if no other middleware has handled it.
- * @param  {Session}   session The session that sent the request.
- * @param  {Frame}   request The request that was sent.
- * @param  {Function} next    The next function, should not be called as
- *                            the Broker's onRequest is the last to be called.
+ * @override
  */
-Broker.prototype.onRequest = function(session, request, next) {
-  console.log("Broker: ");
-  console.log(request);
+Broker.prototype.onReceive = function(session, request, next) {
+  // Just a test.
+  session.sendFrame(new Frame("ERROR", {}, "An error occured."), function() {
+    console.log("Error sent.");
+  });
+};
+
+/**
+ * @override
+ */
+Broker.prototype.onSend = function(session, response, callback, next) {
+  // Sends directly to the session.
+  session.directSendFrame(response, callback);
 };
 
 /**

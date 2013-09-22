@@ -13,7 +13,19 @@ function Middleware() {
  * @param  {Frame} request The request sent by the session.
  * @param  {Function} next The function for calling the next middleware.
  */
-Middleware.prototype.onRequest = function(session, request, next) {
+Middleware.prototype.onReceive = function(session, request, next) {
+  next(session, request);
+};
+
+/**
+ * This function is called when a response is sent back to a client.
+ * @param  {Session}  session   The session to write to.
+ * @param  {Frame}    response  The response to write.
+ * @param  {?function} callback The callback to execute once writing is done.
+ * @param  {function} next      The function for calling the next middleware
+ */
+Middleware.prototype.onSend = function(session, response, callback, next) {
+  next(session, request, callback || function(){});
 };
 
 module.exports.Middleware = Middleware;

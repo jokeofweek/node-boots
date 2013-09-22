@@ -22,10 +22,12 @@ SessionFactory.prototype.getSession = function(connection) {
 
   // Setup events.
   var self = this;
-  session.on('request', function(request) {
-    self.emit('request', session, request);
+  session.on('receiveData', function(request) {
+    self.emit('receiveData', session, request);
   });
-
+  session.on('sendData', function(request, callback) {
+    self.emit('sendData', session, request, callback);
+  });
   return session;
 };
 
