@@ -71,6 +71,21 @@ module.exports = {
 
     test.done();
   },
+  'testOnlyFirstValueUsedForRepeatedKeys': function(test) {
+    var tests = [
+      ["CONNECT\nk:1\nk:2\n\n\0", {k:1}],
+      ["CONNECT\nk:1\nk:2\nk:3\n\n\0", {k:1}],
+      ["CONNECT\nk2:5\nk:1\nk2:1\nk:2\nk:3\n\n\0", {k:1, k2:5}]
+    ];
+
+    for (var i = 0; i < tests.length; i++) {
+      var req = getFrame(tests[i][0]);
+      test.deepEqual(req.getHeaders(), tests[i][1], 
+        "Headers with repeated keys should only use first appearance.");
+    }
+
+    test.done();
+  },
   'testErroneousHeadersReturnNull': function(test) {
     var tests = [
       "CONNECT\0",

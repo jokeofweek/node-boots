@@ -57,7 +57,7 @@ function buildFrame(buffer) {
     }
     // Extract the header
     header = buffer.toString('utf8', startIndex,
-      ((buffer[index - 1] == 13) ? index - 1 : index));
+       ((buffer[index - 1] == 13) ? index - 1 : index));
     // Move past the EOL
     index++;
     // Split it by colon
@@ -67,8 +67,12 @@ function buildFrame(buffer) {
       return null;
     }
 
-    headers[parts[0]]=applyTransformations(parts[1], 
-      BUFFER_TO_FRAME_TRANSFORMATIONS);
+    // Make sure we haven't already used that key, as according to RFC
+    // SHOULD only use first value.
+    if (!headers[parts[0]]) {
+      headers[parts[0]]=applyTransformations(parts[1], 
+          BUFFER_TO_FRAME_TRANSFORMATIONS);
+    } 
     // TODO: Should raise fatal error on undefined escape sequences.
   }
 
