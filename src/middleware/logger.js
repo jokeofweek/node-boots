@@ -5,14 +5,14 @@ var sys = require('sys'),
  * A basic Middleware which logs every event.
  * @constructor
  */
-function LoggerMiddleware() {
+function Logger() {
 };
-sys.inherits(LoggerMiddleware, Middleware);
+sys.inherits(Logger, Middleware);
 
 /**
  * @override
  */
-LoggerMiddleware.prototype.onReceive = function(session, request, next) {
+Logger.prototype.onReceive = function(session, request, next) {
   // Log the request.
   console.log("Received %j from %s.", request, session.getId());
   
@@ -23,11 +23,11 @@ LoggerMiddleware.prototype.onReceive = function(session, request, next) {
 /**
  * @override
  */
-LoggerMiddleware.prototype.onSend = function(session, request, callback, next) {
+Logger.prototype.onSend = function(session, request, callback, next) {
   // Log the request.
   console.log("Sending %j to %s.", request, session.getId());
   // Move to the next middleware.
   next(session, request, callback);
 };
 
-module.exports.LoggerMiddleware = LoggerMiddleware;
+module.exports.Logger = Logger;

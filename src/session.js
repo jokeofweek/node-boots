@@ -16,8 +16,8 @@ function Session(connection, id) {
   this._connection = connection;
   this._id = id
 
-  // Start out with no version.
-  this._version = null;
+  // Start out not connected.
+  this._connected = false;
 
   this._setupListeners();
 
@@ -52,19 +52,18 @@ Session.prototype.getId = function() {
 };
 
 /**
- * @return {?string} The version of STOMP the session is using, else null if not
- *                       connected.
+ * @return {boolean} whether the session is actually connected or not.
  */
-Session.prototype.getVersion = function() {
-  return this._version;
+Session.prototype.isConnected = function() {
+  return this._connected;
 };
 
 /**
- * Updates the session version.
- * @param {?string} version The new STOMP version used by the session.
+ * Updates the status of whether the session is connected or not.
+ * @param {boolean} connected whether the session is connected or not.
  */
-Session.prototype.setVersion = function(version) {
-  this._version = verison;
+Session.prototype.setConnected = function(connected) {
+  this._connected = connected;
 };
 
 /**
@@ -74,6 +73,17 @@ Session.prototype.setVersion = function(version) {
  */
 Session.prototype.sendFrame = function(response, callback) {
   this.emit('sendData', response, callback);
+};
+
+/**
+ * Sends an ERROR frame to the session connection and then closes the connection.
+ * @param  {Frame} response The ERROR frame.
+ */
+Session.prototype.sendErrorFrame = function(response) {
+  var self = this;
+  this.sendFrame(response, function() {
+    self.close();
+  });
 };
 
 /**
@@ -91,6 +101,7 @@ Session.prototype.directSendFrame = function(response, callback) {
  * Closes the session socket.
  */
 Session.prototype.close = function() {
+  this._connected = false;
   this._connection.end();
 };
 

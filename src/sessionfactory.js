@@ -18,7 +18,8 @@ sys.inherits(SessionFactory, EventEmitter);
 
 SessionFactory.prototype.getSession = function(connection) {
   var id = this._sessionId++;
-  var session = new Session(connection, SHA256(this._salt + this._sessionId));
+  var session = new Session(connection, 
+      SHA256(this._salt + this._sessionId).toString());
 
   // Setup events.
   var self = this;

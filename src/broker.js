@@ -2,6 +2,16 @@ var sys = require('sys'),
     Frame = require('./frame.js').Frame;
     Middleware = require('./middleware/middleware.js').Middleware;
 
+var SERVER_VERSION = '1.2';
+var SERVER_VERSION_MISMATCH_FRAME = new Frame(
+  'ERROR',
+  {
+    version: SERVER_VERSION,
+    message: "server accepts version " + SERVER_VERSION
+  },
+  "Supported protocol versions are " + SERVER_VERSION
+);
+
 /**
  * The basic STOMP broker.
  * @param {SessionFactory} sessionFactory The session factory for generating new
@@ -43,19 +53,28 @@ Broker.prototype.addMiddleware = function(middleware) {
  * @override
  */
 Broker.prototype.onReceive = function(session, request, next) {
-  // If the session has no version, then we need to check if this is a
-  // connection request and updat accordingly.
-  if (session.getVersion()) {
-
-  } else {
-    if (request.getCommand() == 'CONNECT') {
+  // If the session is not yet connected, must check for that.
+  if (!session.isConnected()) {
+    if (request.getCommand() == 'CONNECT' || request.getCommand() == 'STOMP') {
       // Parse out the accepted versions. Note that accept-version is not
-      // obligatory for 1.0, so we can assume 1.0 if no header is present.
-      var acceptedVersions = request.getHeaders()['accept-version'] || '1.0';
+      // obligatory for 1.0, so no header means 1.0. If we used STOMP, then
+      // the client is 1.2.
+      var acceptedVersions = request.getHeaders()['accepted-version'] || 
+          (request.getCommand() == 'STOMP') ? '1.2' : '1.0';
+      if (this.canAcceptServerVersion(acceptedVersions)) {
+        session.sendFrame(
+            new Frame("CONNECTED", {
+              version: SERVER_VERSION,
+              session: session.getId()
+            }));
+        session.setConnected(true);
+      } else {
+        session.sendErrorFrame(SERVER_VERSION_MISMATCH_FRAME);
+      }
     } else {
-      session.sendFrame(new Frame("ERROR", {}, "Undefined command."), function() {
-        session.close();
-      });
+      session.sendErrorFrame(new Frame("ERROR", {message: "not connected yet."},
+        "The command " + request.getCommand() + " can not be executed before " +
+        "being connected."));
     }
   }
 };
@@ -74,6 +93,23 @@ Broker.prototype.onSend = function(session, response, callback, next) {
  */
 Broker.prototype.getSessionBuilder = function() {
   return this._sessionFactory.getSession.bind(this._sessionFactory);
+};
+
+/**
+ * Checks whether comma-seperated list of versions sent by the client contains
+ * the server version ({@link #SERVER_VERSION}).
+ * @param  {string} acceptedVersions comma-seperated list of versions
+ * @return {boolean} true if SERVER_VERSION is one of the versions in the list.
+ */
+Broker.prototype.canAcceptServerVersion = function(acceptedVersions) {
+  // Versions seperated by CSV.
+  var versions = acceptedVersions.split(',');
+  for (var i = 0; i < versions.length; i++) {
+    if (versions[i] == SERVER_VERSION) {
+      return true;
+    }
+  }
+  return false;
 };
 
 /**

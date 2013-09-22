@@ -1,5 +1,5 @@
 {
-  "name": "stompinjs",
+  "name": "boots",
   "version": "0.0.0",
   "description": "A STOMP server.",
   "main": "app.js",
