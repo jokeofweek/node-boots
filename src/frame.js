@@ -5,22 +5,22 @@ var HEADER_TRANSFORMATIONS = [
 	[/\\\\/g, '\\']
 ];
 
-function Request(command, headers, body) {
+function Frame(command, headers, body) {
 	this._command = command;
 	this._headers = headers || {};
 	this._body = body || "";
 };
 
-Request.prototype.getCommand = function() {
+Frame.prototype.getCommand = function() {
 	return this._command;
 };
 
-Request.prototype.getHeaders = function() {
+Frame.prototype.getHeaders = function() {
 	return this._headers;
 };
 
-Request.prototype.getBody = function() {
+Frame.prototype.getBody = function() {
 	return this._body;
 };
 
-module.exports.Request = Request;
+module.exports.Frame = Frame;

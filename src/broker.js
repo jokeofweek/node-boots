@@ -17,7 +17,10 @@ function Broker(sessionFactory) {
 	this._middleware = [];
 
 	// Listen to events.
-	this._sessionFactory.on('request', this._onRequest.bind(this));
+	var self = this;
+	this._sessionFactory.on('request', function(session, request) {
+		(self._toNextMethod('onRequest'))(session, request);
+	});
 };
 sys.inherits(Broker, Middleware);
 
@@ -32,19 +35,9 @@ Broker.prototype.addMiddleware = function(middleware) {
 };
 
 /**
- * Event handler when a request is received.
- * @param  {Session} session The session that sent the request.
- * @param  {Request} request The request that was sent.
- * @private
- */
-Broker.prototype._onRequest = function(session, request) {
-	var response = (this._toNextMethod('onRequest'))(session, request);
-};
-
-/**
  * Handles the request if no other middleware has handled it.
  * @param  {Session}   session The session that sent the request.
- * @param  {Request}   request The request that was sent.
+ * @param  {Frame}   request The request that was sent.
  * @param  {Function} next    The next function, should not be called as
  *                            the Broker's onRequest is the last to be called.
  */

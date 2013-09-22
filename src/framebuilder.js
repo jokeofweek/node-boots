@@ -1,4 +1,4 @@
-var Request = require('./request.js').Request;
+var Frame = require('./Frame.js').Frame;
 
 var HEADER_TRANSFORMATIONS = [
 	[/\\r/g, '\r'],
@@ -9,14 +9,14 @@ var HEADER_TRANSFORMATIONS = [
 
 Object.freeze(HEADER_TRANSFORMATIONS);
 
-// TODO: Should allow for adding to a buffer if a request is incomplete.
+// TODO: Should allow for adding to a buffer if a Frame is incomplete.
 
 /**
- * Tries to build a Request object from a Buffer.
- * @param {Buffer} buffer The request buffer.
- * @returns {?Request} A request if one could be built, else null.
+ * Tries to build a Frame object from a Buffer.
+ * @param {Buffer} buffer The Frame buffer.
+ * @returns {?Frame} A Frame if one could be built, else null.
  */
-RequestBuilder = function(buffer) {
+FrameBuilder = function(buffer) {
 	var command;
 	var headers = {};
 	var body;
@@ -89,10 +89,10 @@ RequestBuilder = function(buffer) {
 	}
 	body = buffer.toString('utf8', startIndex, index);
 
-	return new Request(command, headers, body);
+	return new Frame(command, headers, body);
 };
 
 module.exports = {
-	'RequestBuilder': RequestBuilder,
+	'FrameBuilder': FrameBuilder,
 	'HEADER_TRANSFORMATIONS': HEADER_TRANSFORMATIONS
 };
