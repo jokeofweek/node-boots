@@ -43,7 +43,6 @@ RequestBuilder = function(buffer) {
 		index++;
 		// Split it by colon
 		parts = header.split(':');
-		console.log("HEADER:" + header);
 		// Apply all header transformations to the body
 		for (var i = 0; i < l; i++) {
 			parts[1] = parts[1].replace(HEADER_TRANSFORMATIONS[i][0],

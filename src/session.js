@@ -18,7 +18,6 @@ Session.prototype._setupListeners = function() {
 
 	this._connection.on('data', function(data) {
 		console.log(RequestBuilder(data));
-		//console.log(data);
 	});
 };
 
