@@ -1,13 +1,18 @@
 var Frame = require('./Frame.js').Frame;
 
-var HEADER_TRANSFORMATIONS = [
+var BUFFER_TO_FRAME_TRANSFORMATIONS = [
 	[/\\r/g, '\r'],
 	[/\\n/g, '\n'],
 	[/\\c/g, ':'],
 	[/\\\\/g, '\\']
 ];
 
-Object.freeze(HEADER_TRANSFORMATIONS);
+var FRAME_TO_BUFFER_TRANSFORMATIONS = [
+	[/\\/g, "\\\\"],
+	[/:/g, "\\c"],
+	[/\r/g, "\\r"],
+	[/\n/g, "\\n"]
+];
 
 // TODO: Should allow for adding to a buffer if a Frame is incomplete.
 
@@ -40,7 +45,7 @@ function buildFrame(buffer) {
 	var startIndex;
 	var header;
 	var parts;
-	var l = HEADER_TRANSFORMATIONS.length;
+	var l = BUFFER_TO_FRAME_TRANSFORMATIONS.length;
 	while (buffer[index] != 10 && buffer[index] != 13) {
 		// Make sure we haven't abruptly hit EOF.
 		if (buffer[index] == 0) {
@@ -61,12 +66,9 @@ function buildFrame(buffer) {
 		if (parts.length != 2) {
 			return null;
 		}
-		// Apply all header transformations to the body
-		for (var i = 0; i < l; i++) {
-			parts[1] = parts[1].replace(HEADER_TRANSFORMATIONS[i][0],
-				HEADER_TRANSFORMATIONS[i][1]);
-		}
-		headers[parts[0]]=parts[1];
+
+		headers[parts[0]]=applyTransformations(parts[1], 
+			BUFFER_TO_FRAME_TRANSFORMATIONS);
 		// TODO: Should raise fatal error on undefined escape sequences.
 	}
 
@@ -98,7 +100,40 @@ function buildFrame(buffer) {
  * @return {?Buffer} The buffer if it could be converted, else null.
  */
 function buildBuffer(frame) {
-	return null;
+	// Add command
+	var str = frame.getCommand() + "\n";
+
+	// Iterate throug headers.
+	var headers = frame.getHeaders();
+	for (var key in headers) {
+		str += applyTransformations(key, FRAME_TO_BUFFER_TRANSFORMATIONS) + 
+			":" + applyTransformations(headers[key], FRAME_TO_BUFFER_TRANSFORMATIONS) + 
+			"\n";
+	}
+	str += "\n";
+
+	// Add body
+	if (frame.getBody()) {
+		str += frame.getBody();
+	}
+
+	// Add null char.
+	str += "\0";
+
+	return new Buffer(str, 'utf8');
+};
+
+/**
+ * Applies a set of transformations to a string.
+ * @param  {string} str    The string to transform
+ * @param  transformations The set of transformations
+ * @return {string}        The transformed string.
+ */
+function applyTransformations(str, transformations) {
+	for (var i = 0, l = transformations.length; i < l; i++) {
+		str = str.replace(transformations[i][0], transformations[i][1]);
+	}
+	return str;
 };
 
 module.exports.buildFrame = buildFrame;

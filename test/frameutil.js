@@ -1,4 +1,6 @@
-var FrameUtil = require('../src/frameutil.js');
+var Frame = require('../src/frame.js').Frame,
+	FrameUtil = require('../src/frameutil.js');
+
 
 /**
  * Helper function which takes care of converting a string to a buffer and then
@@ -14,6 +16,11 @@ module.exports = {
 	'testBuildFrameIsExported': function(test) {
 		test.ok(FrameUtil.buildFrame, 
 			'FrameUtil.buildFrame should be exported.');
+		test.done();
+	},
+	'testBuildBufferIsExported': function(test) {
+		test.ok(FrameUtil.buildBuffer, 
+			'FrameUtil.buildBuffer should be exported.');
 		test.done();
 	},
 	'testCommandIsExtractedProperly': function(test) {
@@ -86,6 +93,45 @@ module.exports = {
 				"Header should not be parsed correctly and should return null.");
 		}
 
+		test.done();
+	},
+	'testBuildBufferGeneratesForCommandOnly': function(test) {
+		var str = "COMMAND\n\n\0"
+		var frame = new Frame("COMMAND");
+		test.deepEqual(FrameUtil.buildBuffer(frame).toString('utf8'),
+			str);
+		test.done();
+	},
+	'testBuildBufferGeneratesForSimpleKeyValues': function(test) {
+		var str = "COMMAND\nk:v\nk1:\nk2:v2\n\n\0"
+		var frame = new Frame("COMMAND", {
+			k: "v", k1: "", k2: "v2"
+		});
+		test.deepEqual(FrameUtil.buildBuffer(frame).toString('utf8'),
+			str);
+		test.done();
+	},
+	'testBuildBufferGeneratesForBody': function(test) {
+		var str = "COMMAND\nk:v\nk1:\nk2:v2\n\nBODY\nBODYCONT\0"
+		var frame = new Frame("COMMAND", {
+			k: "v", k1: "", k2: "v2"
+		}, "BODY\nBODYCONT");
+		test.deepEqual(FrameUtil.buildBuffer(frame).toString('utf8'),
+			str);
+		test.done();
+	},
+	'testBuldBufferEscapesCharactersInHeadersOnly': function(test) {
+		var tests = [
+			[new Frame("C", {"a:b:":"c:d"}, "BO:DY"), "C\na\\cb\\c:c\\cd\n\nBO:DY\0"],
+			[new Frame("C", {"a\\b\\:":"c\\d"}, "BO\\DY"), "C\na\\\\b\\\\\\c:c\\\\d\n\nBO\\DY\0"],
+			[new Frame("C", {"\na\nb:":"cd\n\n"}, "BO\nDY"), "C\n\\na\\nb\\c:cd\\n\\n\n\nBO\nDY\0"],
+			[new Frame("C", {"\ra\rb:":"cd\\\r\r"}, "BO\nDY"), "C\n\\ra\\rb\\c:cd\\\\\\r\\r\n\nBO\nDY\0"]
+		];
+
+		for (var i = 0; i < tests.length; i++) {
+			test.deepEqual(FrameUtil.buildBuffer(tests[i][0]).toString('utf8'),
+				tests[i][1]);		
+		}
 		test.done();
 	}
 };
