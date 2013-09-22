@@ -1,4 +1,4 @@
-var Request = require('./requestbuilder.js').RequestBuilder,
+var RequestBuilder = require('./requestbuilder.js').RequestBuilder,
 	events = require('events'),
 	util = require('util');
 
