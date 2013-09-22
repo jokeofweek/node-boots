@@ -1,5 +1,5 @@
-var Middleware = require('./middleware.js').Middleware,
-  sys = require('sys');
+var sys = require('sys'),
+    Middleware = require('./middleware.js').Middleware;
 
 /**
  * A basic Middleware which logs every event.
