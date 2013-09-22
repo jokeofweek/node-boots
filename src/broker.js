@@ -44,7 +44,7 @@ Broker.prototype.addMiddleware = function(middleware) {
  */
 Broker.prototype.onReceive = function(session, request, next) {
   // Just a test.
-  session.sendFrame(new Frame("ERROR", {}, "An error occured."), function() {
+  session.sendFrame(new Frame("ERROR", {'version':'1.3,3.3'}, "An error occured."), function() {
     console.log("Error sent.");
   });
 };

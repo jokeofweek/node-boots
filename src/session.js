@@ -32,6 +32,12 @@ Session.prototype._setupListeners = function() {
       self.emit('receiveData', request);
     }
   });
+  this._connection.on('error', function(error) {
+    // Should dispatch to a Middleware.
+  });
+  this._connection.on('close', function(hadError) {
+    // Should dispatch to a Middleware.
+  });
 };
 
 /**
