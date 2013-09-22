@@ -49,7 +49,7 @@ module.exports = {
 
 		test.done();
 	},
-	'testSimpleHeadersAreExtractedProperly': function(test) {
+	'testSimpleValidHeadersAreExtractedProperly': function(test) {
 		var tests = [
 			["CONNECT\n\n\n\0", {}],
 			["CONNECT\nk:\n\n\n\0", {k:''}],
@@ -71,6 +71,30 @@ module.exports = {
 			var req = getReq(tests[i][0]);
 			test.deepEqual(req.getHeaders(), tests[i][1], 
 				"Header could not be parsed correctly.");
+		}
+
+		test.done();
+	},
+	'testErroneousHeadersReturnNull': function(test) {
+		var tests = [
+			"CONNECT\0",
+			"CONNECT\n\0",
+			"CONNECT\r\n\0",
+			"CONNECT",
+			"CONNECT\n\n\n",
+			"CONNECT\r\n\r\n\r\n",
+			"CONNECT\nk\n\n\0" /* Invalid key:value format */,
+			"CONNECT\nk:v\nk2\n\n\0" /* Invalid key:value format */,
+			"CONNECT\r\nk\r\n\r\n\0" /* Invalid key:value format */,
+			"CONNECT\r\nk:v\r\nk2\r\n\r\n\0" /* Invalid key:value format */,
+			"\0",
+			""
+		];
+
+		for (var i = 0; i < tests.length; i++) {
+			var req = getReq(tests[i]);
+			test.equals(req, null, 
+				"Header should not be parsed correctly and should return null.");
 		}
 
 		test.done();
