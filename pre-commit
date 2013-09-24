@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "Pre-commit running..."
+echo "Generating TODO list."
+grep -r "TODO" src/ > TODO.md
+grep -r "TODO" test/ >> TODO.md
+git add TODO.md
