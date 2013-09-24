@@ -25,6 +25,10 @@ function Session(connection, id) {
 };
 util.inherits(Session, events.EventEmitter);
 
+/**
+ * Sets up the event listeners on the connection to pass them to the Session.
+ * @private
+ */
 Session.prototype._setupListeners = function() {
   var self = this;
 

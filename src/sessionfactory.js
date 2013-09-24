@@ -3,6 +3,11 @@ var sys = require('sys'),
     Session = require('./session.js').Session,
     SHA256 = require('crypto-js/sha256');
 
+/**
+ * This class is responsible for creating new {@link Session} objects based
+ * on incoming connections.
+ * @constructor
+ */
 function SessionFactory() {
   // Call parent constructor
   EventEmitter.call(this);
@@ -16,6 +21,12 @@ function SessionFactory() {
 };
 sys.inherits(SessionFactory, EventEmitter);
 
+
+/**
+ * Creates a new Session object to wrap around the connection.
+ * @param  {Connection} connection The connection to the client
+ * @return {Session} A session wrapped around the connection.
+ */
 SessionFactory.prototype.getSession = function(connection) {
   var id = this._sessionId++;
   var session = new Session(connection, 

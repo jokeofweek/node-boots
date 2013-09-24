@@ -10,14 +10,23 @@ function Frame(command, headers, body) {
   this._body = body || "";
 };
 
+/**
+ * @return {string} The frame's command.
+ */
 Frame.prototype.getCommand = function() {
   return this._command;
 };
 
+/**
+ * @return {object} The object representing the frame headers.
+ */
 Frame.prototype.getHeaders = function() {
   return this._headers;
 };
 
+/**
+ * @return {string} The body of the rame.
+ */
 Frame.prototype.getBody = function() {
   return this._body;
 };
