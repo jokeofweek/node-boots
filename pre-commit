@@ -1,7 +1,13 @@
 #!/bin/sh
 echo "Pre-commit running..."
 echo "Generating TODO list."
-grep -r "TODO" src/ > TODO.md
-grep -r "TODO" test/ >> TODO.md
-sed -E -i 's/\s*\/\/(\s)+TODO://g' TODO.md
+chmod u+w TODO.md
+echo "# TODOs: " > TODO.md
+echo >> TODO.md
+grep -r "TODO" src/ > temp
+grep -r "TODO" test/ >> temp
+sed -E -i 's/\s*\/\/(\s)+TODO://g' temp
+sed -E -i 's/^/- /g' temp
+cat temp >> TODO.md
+rm -f temp
 git add TODO.md
