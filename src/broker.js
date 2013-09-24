@@ -1,4 +1,5 @@
 var sys = require('sys'),
+    Config = require('./../config.js'),
     Frame = require('./frame.js').Frame;
     Middleware = require('./middleware/middleware.js').Middleware;
 
@@ -65,6 +66,7 @@ Broker.prototype.onReceive = function(session, request, next) {
         session.sendFrame(
             new Frame("CONNECTED", {
               version: SERVER_VERSION,
+              server: Config.SERVER,
               session: session.getId()
             }));
         session.setConnected(true);
