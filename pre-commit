@@ -3,4 +3,5 @@ echo "Pre-commit running..."
 echo "Generating TODO list."
 grep -r "TODO" src/ > TODO.md
 grep -r "TODO" test/ >> TODO.md
+sed -E -i 's/\s*\/\/(\s)+TODO://g' TODO.md
 git add TODO.md
