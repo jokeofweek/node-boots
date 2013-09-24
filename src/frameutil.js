@@ -15,6 +15,7 @@ var FRAME_TO_BUFFER_TRANSFORMATIONS = [
 ];
 
 // TODO: Should allow for adding to a buffer if a Frame is incomplete.
+// TODO: Allow for content-length.
 
 /**
  * Tries to build a Frame object from a Buffer.
