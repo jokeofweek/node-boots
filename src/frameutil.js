@@ -110,8 +110,8 @@ function buildBuffer(frame) {
   // Iterate throug headers.
   var headers = frame.getHeaders();
   for (var key in headers) {
-    str += applyTransformations(key, FRAME_TO_BUFFER_TRANSFORMATIONS) + 
-      ":" + applyTransformations(headers[key], FRAME_TO_BUFFER_TRANSFORMATIONS) + 
+    str += applyTransformations('' + key, FRAME_TO_BUFFER_TRANSFORMATIONS) + 
+      ":" + applyTransformations('' + headers[key], FRAME_TO_BUFFER_TRANSFORMATIONS) + 
       "\n";
   }
   str += "\n";

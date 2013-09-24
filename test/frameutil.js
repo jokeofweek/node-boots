@@ -118,9 +118,9 @@ module.exports = {
     test.done();
   },
   'testBuildBufferGeneratesForSimpleKeyValues': function(test) {
-    var str = "COMMAND\nk:v\nk1:\nk2:v2\n\n\0"
+    var str = "COMMAND\nk:v\nk1:\nk2:v2\nk3:5\n\n\0"
     var frame = new Frame("COMMAND", {
-      k: "v", k1: "", k2: "v2"
+      k: "v", k1: "", k2: "v2", k3: 5
     });
     test.deepEqual(FrameUtil.buildBuffer(frame).toString('utf8'),
       str);
@@ -135,7 +135,7 @@ module.exports = {
       str);
     test.done();
   },
-  'testBuldBufferEscapesCharactersInHeadersOnly': function(test) {
+  'testBuildBufferEscapesCharactersInHeadersOnly': function(test) {
     var tests = [
       [new Frame("C", {"a:b:":"c:d"}, "BO:DY"), "C\na\\cb\\c:c\\cd\n\nBO:DY\0"],
       [new Frame("C", {"a\\b\\:":"c\\d"}, "BO\\DY"), "C\na\\\\b\\\\\\c:c\\\\d\n\nBO\\DY\0"],
