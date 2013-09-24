@@ -3,8 +3,6 @@ var Frame = require('./../src/frame.js').Frame,
     MockConnection = require('./mock/connection.js').MockConnection,
     Session = require('./../src/session.js').Session;
 
-// TODO: Test sendFrame/sendError!
-
 module.exports = {
   'testSessionGetIdReturnsId': function(test) {
     var connection = new MockConnection();
@@ -48,6 +46,49 @@ module.exports = {
     test.deepEqual(receivedContent, expectedContent);
     test.deepEqual(receivedEncoding, expectedEncoding);
     test.deepEqual(receivedCallback, expectedCallback);
+
+    test.done();
+  },
+  'testSessionSendFrameEmitsSendDataEvent': function(test) {
+
+    var expectedFrame = new Frame("COMMAND", {k: '1', k: '2'}, "BODY");
+    var expectedCallback = function(){1+1};
+    var receivedFrame = null;
+    var receivedCallback = null;
+
+    var session = new Session(new MockConnection(), 123);
+    session.on('sendData', function(response, callback) {
+      receivedFrame = response;
+      receivedCallback = callback;
+    });
+
+    session.sendFrame(expectedFrame, expectedCallback);
+
+    test.deepEqual(receivedFrame, expectedFrame);
+    test.deepEqual(receivedCallback, expectedCallback);
+
+    test.done();
+  },
+  'testSessionSendErrorFrameEmitsSendDataEventAndCloses': function(test) {
+
+    var expectedFrame = new Frame("COMMAND", {k: '1', k: '2'}, "BODY");
+    var receivedFrame = null;
+
+    var connection = new MockConnection();
+    var session = new Session(connection, 123);
+    var receivedCallback;
+    session.on('sendData', function(response, callback) {
+      receivedFrame = response;
+      receivedCallback = callback;
+      callback();
+    });
+
+    session.sendErrorFrame(expectedFrame);
+
+    test.deepEqual(receivedFrame, expectedFrame);
+    test.ok(receivedCallback);
+    test.ok(!session.isConnected());
+    test.ok(!connection.isConnected());
 
     test.done();
   }
