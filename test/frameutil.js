@@ -129,7 +129,8 @@ module.exports = {
       "C\ncontent-length:1\n\n\0",
       "C\ncontent-length:5\n\n12345",
       "C\ncontent-length:999\n\n\0",
-      "C\ncontent-length:5\n\n123456\0"
+      "C\ncontent-length:5\n\n123456\0",
+      "C\ncontent-length:a\n\n1235\0"
     ];
 
     for (var i = 0; i < tests.length; i++) {
