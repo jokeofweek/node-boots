@@ -61,15 +61,16 @@ Broker.prototype.onReceive = function(session, request, next) {
       // Parse out the accepted versions. Note that accept-version is not
       // obligatory for 1.0, so no header means 1.0. If we used STOMP, then
       // the client is 1.2.
-      var acceptedVersions = request.getHeaders()['accepted-version'] || 
-          (request.getCommand() == 'STOMP') ? '1.2' : '1.0';
-      if (this.canAcceptServerVersion(acceptedVersions)) {
-        session.sendFrame(
-            new Frame("CONNECTED", {
-              version: SERVER_VERSION,
-              server: Config.SERVER,
-              session: session.getId()
-            }));
+      this._processConnectionHeaders(request);
+      if (this.canAcceptServerVersion(request.getHeaders()['accept-version'])) {
+        var connectedHeaders = {
+          version: SERVER_VERSION,
+          server: Config.SERVER,
+          session: session.getId(),
+          'heart-beat': '0,0'
+        };        
+
+        session.sendFrame(new Frame("CONNECTED", connectedHeaders));
         session.setConnected(true);
       } else {
         session.sendErrorFrame(SERVER_VERSION_MISMATCH_FRAME);
@@ -148,5 +149,34 @@ Broker.prototype._toNextMethod = function(functionName) {
 
   return next;
 };
+
+/**
+ * This helper function updates a connection frame to include any headers which 
+ * may be missing. An example of this is injecting a accept-version header for 
+ * CONNECT frames that are missing this. 
+ * @param  {frame} frame The frame to update.
+ * @private
+ */
+Broker.prototype._processConnectionHeaders = function(frame) {
+  var headers = frame.getHeaders();
+
+  // Temporary hack - some clients send accepted-version.
+  // TODO: Remove temporary hack once https://github.com/gdaws/node-stomp/pull/5 is implemented.
+  if (!headers['accept-version'] && headers['accepted-version']) {
+    headers['accept-version'] = headers['accepted-version'];
+  }
+
+  if (frame.getCommand() == 'STOMP') {
+    // No accept-version on STOMP means 1.2
+    headers['accept-version'] = headers['accept-version'] || '1.2';
+  } else if (frame.getCommand() == 'CONNECT') {
+    // No accept-version on CONNECT means 1.0
+    headers['accept-version'] = headers['accept-version'] || '1.0';
+  }
+
+  // For no heart-beat, assume 0,0
+  headers['heart-beat'] = headers['heart-beat'] || '0,0';
+};
+
 
 module.exports.Broker = Broker;
