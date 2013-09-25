@@ -110,6 +110,34 @@ module.exports = {
 
     test.done();
   },
+  'testBuildFrameTakesContentLengthIntoConsideration': function(test) {
+    var tests = [
+      ["12345", "C\ncontent-length:5\n\n12345\0"],
+      ["", "C\ncontent-length:0\n\n\0"],
+      ["\0"+"12345", "C\ncontent-length:6\n\n\0"+"12345\0"]
+    ];
+
+    for (var i = 0; i < tests.length; i++) {
+      var req = getFrame(tests[i][1]);
+      test.equals(req.getBody(), tests[i][0]);
+    }
+
+    test.done();
+  },
+  'testBuildFrameWithInvalidContentLengthReturnsNull': function(test) {
+    var tests = [ 
+      "C\ncontent-length:1\n\n\0",
+      "C\ncontent-length:5\n\n12345",
+      "C\ncontent-length:999\n\n\0",
+      "C\ncontent-length:5\n\n123456\0"
+    ];
+
+    for (var i = 0; i < tests.length; i++) {
+      var req = getFrame(tests[i]);
+      test.equals(req, null);
+    }
+    test.done();
+  },
   'testBuildBufferGeneratesForCommandOnly': function(test) {
     var str = "COMMAND\n\n\0"
     var frame = new Frame("COMMAND");

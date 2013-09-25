@@ -15,7 +15,7 @@ var FRAME_TO_BUFFER_TRANSFORMATIONS = [
 ];
 
 // TODO: Should allow for adding to a buffer if a Frame is incomplete.
-// TODO: Allow for content-length.
+// TODO: Allow for content-length in the buildBuffer.
 
 /**
  * Tries to build a Frame object from a Buffer.
@@ -84,17 +84,41 @@ function buildFrame(buffer) {
 
   index++;
 
-  // Finaly, extract all the body.
+// Finaly, extract all the body.
   startIndex = index;
-  // Iterate until we hit null (may not be last)
-  while (buffer[index] != 0) {
-    // Make sure we don't abruptly hit EOF
-    if (index == buffer.length) {
+
+  // Check if we have a content-length header.
+  if (headers.hasOwnProperty('content-length')) {
+    // Validate the content-length is numeric and convert it.
+    headers['content-length'] = Number(headers['content-length']);
+    if (Number.isNaN(headers['content-length'])) {
       return null;
     }
-    index++;
+    // Make sure we have enough space in the buffer. Note that we have to do
+    // <= since there has to be enough space for the content-length plus a 
+    // null terminator.
+    if (buffer.length <= (startIndex + headers['content-length'])) {
+      console.log(buffer.length + ":" + startIndex + ":" + headers['content-length']);
+      return null;
+    }
+    // Make sure it's terminated by then null terminator.
+    if (buffer[startIndex + headers['content-length']] != 0) {
+      return null;
+    }
+    // Copy over the entire body.
+    body = buffer.toString('utf8', startIndex, 
+        startIndex + headers['content-length']);
+  } else {
+    // Iterate until we hit null (may not be last)
+    while (buffer[index] != 0) {
+      // Make sure we don't abruptly hit EOF
+      if (index == buffer.length) {
+        return null;
+      }
+      index++;
+    }
+    body = buffer.toString('utf8', startIndex, index);
   }
-  body = buffer.toString('utf8', startIndex, index);
 
   return new Frame(command, headers, body);
 };
