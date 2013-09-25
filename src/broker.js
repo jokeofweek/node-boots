@@ -57,6 +57,7 @@ Broker.prototype.onReceive = function(session, request, next) {
   // If the session is not yet connected, must check for that.
   if (!session.isConnected()) {
     if (request.getCommand() == 'CONNECT' || request.getCommand() == 'STOMP') {
+      // TODO: Take host header into consideration.
       // Parse out the accepted versions. Note that accept-version is not
       // obligatory for 1.0, so no header means 1.0. If we used STOMP, then
       // the client is 1.2.
