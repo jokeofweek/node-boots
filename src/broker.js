@@ -17,19 +17,20 @@ var SERVER_VERSION_MISMATCH_FRAME = new Frame(
  * The basic STOMP broker.
  * @param {SessionFactory} sessionFactory The session factory for generating new
  *                                        sessions.
- * @param {Protocol} protocol The protocol to use for handling commands.
+ * @param {Middleware} middleware The middleware to use for actually handling
+ *                                commands.
  * @constructor
  * @extends {Middleware}
  */
-function Broker(sessionFactory, protocol) {
+function Broker(sessionFactory, middleware) {
   // Call middleware constructor.
   Middleware.call(this);
 
   this._sessionFactory = sessionFactory;
-  this._protocol = protocol;
 
   // Keep layers of middleware.
   this._middleware = [];
+  this._defaultMiddleware = [this, middleware];
 
   // Listen to events.
   var self = this;
@@ -83,7 +84,8 @@ Broker.prototype.onReceive = function(session, request, next) {
         "being connected."));
     }
   } else {
-    this._protocol.handleFrame(this, session, request);
+    // Move on to next middleware.
+    next(session, request);
   }
 };
 
@@ -132,19 +134,22 @@ Broker.prototype.canAcceptServerVersion = function(acceptedVersions) {
  */
 Broker.prototype._toNextMethod = function(functionName) {
   var self = this;
-  var i = 0; 
+  var i = 0; // middleware counter
+  var j = 0; // default middleware counter
 
   var next = function() {
     var middle;
-    // If we've executed all middleware, then we use the Broker object
-    // as middleware.
+    // If we've executed all middleware, then we switch over to default
+    // middleware.
     if (i == self._middleware.length) {
-      middle = self;
+      middle = self._defaultMiddleware[j];
+      j++;
     } else {
       // Get the next middleware.
       middle = self._middleware[i];
       i++;
     }
+
     // Convert args to array and add next.
     var args = Array.prototype.slice.call(arguments, 0);
     args.push(next);

@@ -3,9 +3,10 @@ var net = require('net'),
     Config = require('./config.js'),
     CommandValidator = require('./src/middleware/commandvalidator.js').CommandValidator,
     Logger = require('./src/middleware/logger.js').Logger,
-    SessionFactory = require('./src/sessionfactory.js').SessionFactory;
-
-var broker = new Broker(new SessionFactory());
+    SessionFactory = require('./src/sessionfactory.js').SessionFactory,
+    Stomp12 = require('./src/middleware/stomp12.js').Stomp12;
+    
+var broker = new Broker(new SessionFactory(), new Stomp12());
 broker.addMiddleware(new Logger());
 broker.addMiddleware(new CommandValidator());
 

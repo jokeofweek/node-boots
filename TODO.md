@@ -5,4 +5,5 @@
 - src/frameutil.js: Should allow for adding to a buffer if a Frame is incomplete.
 - src/frameutil.js: Allow for content-length in the buildBuffer.
 - src/frameutil.js: Should raise fatal error on undefined escape sequences.
+- src/middleware/stomp12.js: Need to allow adding to a buffer for a session before we can implement this.
 - test/frameutil.js: More tests! 
