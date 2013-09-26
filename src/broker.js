@@ -17,14 +17,16 @@ var SERVER_VERSION_MISMATCH_FRAME = new Frame(
  * The basic STOMP broker.
  * @param {SessionFactory} sessionFactory The session factory for generating new
  *                                        sessions.
+ * @param {Protocol} protocol The protocol to use for handling commands.
  * @constructor
  * @extends {Middleware}
  */
-function Broker(sessionFactory) {
+function Broker(sessionFactory, protocol) {
   // Call middleware constructor.
   Middleware.call(this);
 
   this._sessionFactory = sessionFactory;
+  this._protocol = protocol;
 
   // Keep layers of middleware.
   this._middleware = [];
@@ -80,6 +82,8 @@ Broker.prototype.onReceive = function(session, request, next) {
         "The command " + request.getCommand() + " can not be executed before " +
         "being connected."));
     }
+  } else {
+    this._protocol.handleFrame(this, session, request);
   }
 };
 
