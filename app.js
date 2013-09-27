@@ -14,4 +14,4 @@ broker.addMiddleware(new CommandValidator());
 var server = net.createServer(broker.getSessionBuilder());
 server.listen(Config.PORT);
 
-console.log('Server started on ' + Config.PORT + '.');
+console.log('Boots Server started on ' + Config.PORT + '.');
