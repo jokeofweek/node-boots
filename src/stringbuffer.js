@@ -1,4 +1,6 @@
 function StringBuffer(maxSize) {
+  // Default max size.
+  maxSize = maxSize || 65536;
   // Length of what's currently written to the buffer.
   this._length = 0;
   this._buffer = new Buffer(maxSize);
@@ -33,7 +35,7 @@ StringBuffer.prototype.toString = function(encoding) {
  * @return {Buffer} A buffer containing the StringBuffer contents.
  **/ 
 StringBuffer.prototype.toBuffer = function() {
-  return this._buffer.slice(0, this._length).freeze();
+  return this._buffer.slice(0, this._length);
 };
 
 /**
