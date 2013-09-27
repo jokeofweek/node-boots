@@ -14,18 +14,19 @@ var FRAME_TO_BUFFER_TRANSFORMATIONS = [
   [/\n/g, "\\n"]
 ];
 
-// TODO: Should allow for adding to a buffer if a Frame is incomplete.
 // TODO: Allow for content-length in the buildBuffer.
 
 /**
  * Tries to build a Frame object from a Buffer.
- * @param {Buffer} buffer The Frame buffer.
+ * @param {StringBuffer} stringBuffer The string buffer holding the contents.
  * @returns {?Frame} A Frame if one could be built, else null.
  */
-function buildFrame(buffer) {
+function buildFrame(stringBuffer) {
   var command;
   var headers = {};
   var body;
+
+  var buffer = stringBuffer.toBuffer();
 
   // First parse out the command.
   var index = 0;
@@ -84,7 +85,7 @@ function buildFrame(buffer) {
 
   index++;
 
-// Finaly, extract all the body.
+  // Finaly, extract all the body.
   startIndex = index;
 
   // Check if we have a content-length header.
@@ -98,7 +99,6 @@ function buildFrame(buffer) {
     // <= since there has to be enough space for the content-length plus a 
     // null terminator.
     if (buffer.length <= (startIndex + headers['content-length'])) {
-      console.log(buffer.length + ":" + startIndex + ":" + headers['content-length']);
       return null;
     }
     // Make sure it's terminated by then null terminator.
@@ -108,6 +108,7 @@ function buildFrame(buffer) {
     // Copy over the entire body.
     body = buffer.toString('utf8', startIndex, 
         startIndex + headers['content-length']);
+    index += headers['content-length'];
   } else {
     // Iterate until we hit null (may not be last)
     while (buffer[index] != 0) {
@@ -120,6 +121,14 @@ function buildFrame(buffer) {
     body = buffer.toString('utf8', startIndex, index);
   }
 
+  // Consume any remaining newlines after the null, since some clients send \0\n.
+  while (index != buffer.length && (buffer[index] == 0 ||
+      buffer[index] == 10 || buffer[index] == 13)) { 
+    index++;
+  }
+
+  // Remove characters from the buffer.
+  stringBuffer.trimFront(index);
   return new Frame(command, headers, body);
 };
 

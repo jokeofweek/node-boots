@@ -1,13 +1,26 @@
 var Frame = require('../src/frame.js').Frame,
-    FrameUtil = require('../src/frameutil.js');
+    FrameUtil = require('../src/frameutil.js'),
+    StringBuffer = require('../src/stringbuffer.js').StringBuffer;
 
 
 /**
  * Helper function which takes care of converting a string to a buffer and then
  * building a Frame out of it.
+ * @param  {string} str The string to use.
  */
 var getFrame = function(str) {
-  return FrameUtil.buildFrame(new Buffer(str));
+  return FrameUtil.buildFrame(getStringBuffer(str));
+};
+
+/**
+ * Generates a string buffer for a string.
+ * @param  {string} str The string to use.
+ * @return {StringBuffer} The built StringBuffer.
+ */
+var getStringBuffer = function(str) {
+  var stringBuffer = new StringBuffer();
+  stringBuffer.append(new Buffer(str));
+  return stringBuffer;
 };
 
 // TODO: More tests! 
@@ -136,6 +149,58 @@ module.exports = {
     for (var i = 0; i < tests.length; i++) {
       var req = getFrame(tests[i]);
       test.equals(req, null);
+    }
+    test.done();
+  },
+  'testBuildFrameTrimsTrailingEOL': function(test) {
+    var tests = [
+      'C\n\n\0\n\n\n',
+      'C\n1:2\n3:4\n\n\0\n\r\n\n',
+      'C\n1:2\n3:4\n\nBODY\0\n',
+    ];
+
+    for (var i = 0; i < tests.length; i++) {
+      var stringBuffer = getStringBuffer(tests[i]);
+      var req = FrameUtil.buildFrame(stringBuffer);
+      test.ok(req);
+      test.equals(stringBuffer.toString(), '');
+    }
+    test.done();
+  },
+  'testBuildFrameConsumesRightInput': function(test) {
+    var tests = [
+      'C\n\n\0\n\n\nABC',
+      'C\n1:2\n3:4\n\n\0\n\r\n\nABC',
+      'C\n1:2\n3:4\n\nBODY\0ABC'
+    ];
+    for (var i = 0; i < tests.length; i++) {
+      var stringBuffer = getStringBuffer(tests[i]);
+      var req = FrameUtil.buildFrame(stringBuffer);
+      test.ok(req);
+      test.equals(stringBuffer.toString(), 'ABC');
+    }
+    test.done();
+  },
+  'testBuildFrameAllowsRepeatedCommandsInBuffer': function(test) {
+    var tests = [
+      ['C\nk1:v1\nk2:v2\n\n\0C2\nk3:v3\n\n\0', 
+        [new Frame('C', {k1:'v1', k2:'v2'}), new Frame('C2', {k3:'v3'})]],
+      ['C\nk1:v1\nk2:v2\n\nBODY1\0C2\nk3:v3\n\n\0\n\nC3\n\n\0', 
+        [new Frame('C', {k1:'v1', k2:'v2'}, 'BODY1'), 
+         new Frame('C2', {k3:'v3'}),
+         new Frame('C3')]]
+    ];
+
+    var frame;
+    var frames;
+    var stringBuffer;
+    for (var i = 0; i < tests.length; i++) {
+      frames = [];
+      stringBuffer = getStringBuffer(tests[i][0]);
+      while ((frame = FrameUtil.buildFrame(stringBuffer))) {
+        frames.push(frame);
+      }
+      test.deepEqual(frames, tests[i][1]);
     }
     test.done();
   },

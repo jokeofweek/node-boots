@@ -1,6 +1,7 @@
 var events = require('events'),
     util = require('util'),
-    FrameUtil = require('./frameutil.js');
+    FrameUtil = require('./frameutil.js'),
+    StringBuffer = require('./stringbuffer.js').StringBuffer;
 
 /**
  * This class represents a client session.
@@ -15,6 +16,9 @@ function Session(connection, id) {
 
   this._connection = connection;
   this._id = id
+
+  // Create a string buffer for the session.
+  this._buffer = new StringBuffer();
 
   // Start out not connected.
   this._connected = false;
@@ -33,10 +37,13 @@ Session.prototype._setupListeners = function() {
   var self = this;
 
   this._connection.on('data', function(data) {
-    var request = FrameUtil.buildFrame(data);
-    // Only emit the data if the request was valid.
-    if (request) {
-      self.emit('receiveData', request);
+    // Add the data to our string buffer, keep on building a frame
+    // until we can't.
+    self._buffer.append(data);
+    var frame;
+    while ((frame = FrameUtil.buildFrame(self._buffer))) {
+      // Emit an event for each received frame.
+      self.emit('receiveData', frame);
     }
   });
   this._connection.on('error', function(error) {
