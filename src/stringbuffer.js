@@ -24,7 +24,16 @@ StringBuffer.prototype.append = function(buffer) {
  * @return {string}          The contents of the buffer.
  */
 StringBuffer.prototype.toString = function(encoding) {
-  return this._buffer.slice(0, this._length).toString(encoding || 'utf8')
+  return this.toBuffer().toString(encoding || 'utf8')
+};
+
+/**
+ * Convers the StringBuffer to a buffer object. Note that this buffer should not
+ * be mutated.
+ * @return {Buffer} A buffer containing the StringBuffer contents.
+ **/ 
+StringBuffer.prototype.toBuffer = function() {
+  return this._buffer.slice(0, this._length).freeze();
 };
 
 /**

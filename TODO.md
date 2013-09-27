@@ -7,3 +7,4 @@
 - src/frameutil.js: Should raise fatal error on undefined escape sequences.
 - src/middleware/stomp12.js: Need to allow adding to a buffer for a session before we can implement this.
 - test/frameutil.js: More tests! 
+- test/stringbuffer.js: Test with different encodings.

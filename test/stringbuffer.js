@@ -1,5 +1,7 @@
 var StringBuffer = require('../src/stringbuffer.js').StringBuffer;
 
+// TODO: Test with different encodings.
+
 module.exports = {
 
   'testNewBufferIsEmpty': function(test) {
