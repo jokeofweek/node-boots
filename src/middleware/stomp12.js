@@ -13,7 +13,7 @@ sys.inherits(Stomp12, Middleware);
 /**
  * @override
  */
-Stomp12.prototype.onReceive = function(session, request, next) {
+Stomp12.prototype.onReceive = function(broker, session, request, next) {
   // TODO: Need to allow adding to a buffer for a session before we can implement this.
 };
 

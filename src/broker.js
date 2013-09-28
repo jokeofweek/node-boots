@@ -35,10 +35,10 @@ function Broker(sessionFactory, middleware) {
   // Listen to events.
   var self = this;
   this._sessionFactory.on('receiveData', function(session, request) {
-    (self._toNextMethod('onReceive'))(session, request);
+    (self._toNextMethod('onReceive'))(self, session, request);
   });
   this._sessionFactory.on('sendData', function(session, request, callback) {
-    (self._toNextMethod('onSend'))(session, request, callback);
+    (self._toNextMethod('onSend'))(self, session, request, callback);
   });
 };
 sys.inherits(Broker, Middleware);
@@ -56,7 +56,7 @@ Broker.prototype.addMiddleware = function(middleware) {
 /**
  * @override
  */
-Broker.prototype.onReceive = function(session, request, next) {
+Broker.prototype.onReceive = function(broker, session, request, next) {
   // If the session is not yet connected, must check for that.
   if (!session.isConnected()) {
     if (request.getCommand() == 'CONNECT' || request.getCommand() == 'STOMP') {
@@ -85,14 +85,14 @@ Broker.prototype.onReceive = function(session, request, next) {
     }
   } else {
     // Move on to next middleware.
-    next(session, request);
+    next(broker, session, request);
   }
 };
 
 /**
  * @override
  */
-Broker.prototype.onSend = function(session, response, callback, next) {
+Broker.prototype.onSend = function(broker, session, response, callback, next) {
   // Sends directly to the session.
   session.directSendFrame(response, callback);
 };

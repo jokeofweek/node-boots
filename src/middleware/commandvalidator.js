@@ -28,7 +28,7 @@ sys.inherits(CommandValidator, Middleware);
 /**
  * @override
  */
-CommandValidator.prototype.onReceive = function(session, request, next) {
+CommandValidator.prototype.onReceive = function(broker, session, request, next) {
   // Make sure request has a valid command.
   if (!VALID_COMMANDS[request.getCommand()]) {
     session.sendErrorFrame(
@@ -36,7 +36,7 @@ CommandValidator.prototype.onReceive = function(session, request, next) {
             "The command " + request.getCommand() + " is not defined."));
   } else {
     // Move to the next middleware.
-    next(session, request);
+    next(broker, session, request);
   }
 };
 

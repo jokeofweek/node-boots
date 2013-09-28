@@ -12,22 +12,22 @@ sys.inherits(Logger, Middleware);
 /**
  * @override
  */
-Logger.prototype.onReceive = function(session, request, next) {
+Logger.prototype.onReceive = function(broker, session, request, next) {
   // Log the request.
   console.log("Received %j from %s.", request, session.getId());
   
   // Move to the next middleware.
-  next(session, request);
+  next(broker, session, request);
 };
 
 /**
  * @override
  */
-Logger.prototype.onSend = function(session, request, callback, next) {
+Logger.prototype.onSend = function(broker, session, request, callback, next) {
   // Log the request.
   console.log("Sending %j to %s.", request, session.getId());
   // Move to the next middleware.
-  next(session, request, callback);
+  next(broker, session, request, callback);
 };
 
 module.exports.Logger = Logger;
