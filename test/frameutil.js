@@ -209,6 +209,8 @@ module.exports = {
     var frame = new Frame("COMMAND");
     test.deepEqual(FrameUtil.buildBuffer(frame).toString('utf8'),
       str);
+    test.deepEqual(FrameUtil.buildBuffer(frame, true).toString('utf8'),
+      str.slice(0, -1));
     test.done();
   },
   'testBuildBufferGeneratesForSimpleKeyValues': function(test) {
@@ -218,6 +220,8 @@ module.exports = {
     });
     test.deepEqual(FrameUtil.buildBuffer(frame).toString('utf8'),
       str);
+    test.deepEqual(FrameUtil.buildBuffer(frame, true).toString('utf8'),
+      str.slice(-0, -1));
     test.done();
   },
   'testBuildBufferGeneratesForBody': function(test) {
@@ -227,6 +231,8 @@ module.exports = {
     }, "BODY\nBODYCONT");
     test.deepEqual(FrameUtil.buildBuffer(frame).toString('utf8'),
       str);
+    test.deepEqual(FrameUtil.buildBuffer(frame, true).toString('utf8'),
+      str.slice(0, -1));
     test.done();
   },
   'testBuildBufferEscapesCharactersInHeadersOnly': function(test) {
@@ -239,7 +245,9 @@ module.exports = {
 
     for (var i = 0; i < tests.length; i++) {
       test.deepEqual(FrameUtil.buildBuffer(tests[i][0]).toString('utf8'),
-        tests[i][1]);    
+        tests[i][1]);
+      test.deepEqual(FrameUtil.buildBuffer(tests[i][0], true).toString('utf8'),
+        tests[i][1].slice(0, -1));
     }
     test.done();
   }

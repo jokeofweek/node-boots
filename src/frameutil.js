@@ -134,10 +134,12 @@ function buildFrame(stringBuffer) {
 
 /**
  * Builds a Buffer object containing the string representation of a frame.
- * @param  {Frame} frame The frame to convert.
+ * @param {Frame} frame The frame to convert.
+ * @param {?boolean} ignoreNull Optional variable allowing to skip adding the
+ *                              null character at the end. False by default. 
  * @return {?Buffer} The buffer if it could be converted, else null.
  */
-function buildBuffer(frame) {
+function buildBuffer(frame, ignoreNull) {
   // Add command
   var str = frame.getCommand() + "\n";
 
@@ -156,7 +158,9 @@ function buildBuffer(frame) {
   }
 
   // Add null char.
-  str += "\0";
+  if (!ignoreNull) {
+   str += "\0";
+  }
 
   return new Buffer(str, 'utf8');
 };
