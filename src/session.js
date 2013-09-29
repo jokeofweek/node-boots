@@ -23,6 +23,9 @@ function Session(connection, id) {
   // Start out not connected.
   this._connected = false;
 
+  // Set up our set of subscriptions.
+  this._subscriptions = {};
+
   this._setupListeners();
 
   this.emit('connect');
@@ -114,6 +117,23 @@ Session.prototype.directSendFrame = function(response, callback) {
 Session.prototype.close = function() {
   this._connected = false;
   this._connection.end();
+};
+
+/**
+ * Adds a subscription to the Session.
+ * @param {string} id           The ID of the subscription.
+ * @param {object} subscription The object representing the subscription.
+ * @return {boolean} true if the subscription was added, false if a subscription
+ *                        already exists with that ID.
+ */
+Session.prototype.addSubscription = function(id, subscription) {
+  // Adds a subscription if the id doesn't already exist.
+  if (!this._subscriptions[id]) {
+    this._subscriptions[id] = subscription;
+    return true;
+  } else {
+    return false;
+  }
 };
 
 module.exports.Session = Session;
