@@ -40,7 +40,7 @@ Stomp12.prototype.onReceive = function(broker, session, request, next) {
 };
 
 /**
- * Generates a malofrmed frame received frame.
+ * Generates a "malformed frame received" frame.
  * @param {Frame} request The invalid request the client sent.
  * @param {string} header The missing header.
  * @param {?string} message An optional message to send to the client. If the
@@ -49,7 +49,7 @@ Stomp12.prototype.onReceive = function(broker, session, request, next) {
  * @return {Frame} The ERROR frame notifying the client.
  * @private
  */
-Stomp12.prototype._getMissingHeaderFrame = function(request, header, message) {
+Stomp12.prototype._getHeaderErrorFrame = function(request, header, message) {
   message = message || "Did not contain a valid " + header + 
         " header, which is REQUIRED\n" +
         "for " + request.getCommand() + " commands";
@@ -83,7 +83,7 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
     process.exit(0);
     return;
     session.sendErrorFrame(
-      this._getMissingHeaderFrame(request, 'id'));
+      this._getHeaderErrorFrame(request, 'id'));
     return;
   }
 
@@ -93,7 +93,7 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
   } else {
     // A subscription must have a destination, so return an error.
     session.sendErrorFrame(
-      this._getMissingHeaderFrame(request, 'destination'));
+      this._getHeaderErrorFrame(request, 'destination'));
     return;
   }
 
@@ -104,7 +104,7 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
       subscription['ack'] = request.getHeaders('ack');
     } else {
       session.sendErrorFrame(
-        this._getMissingHeaderFrame(request, 'ack',
+        this._getHeaderErrorFrame(request, 'ack',
             'Did not contain a valid ack header. Either the header must not ' +
             'be present or the value must be one of auto, client, or ' + 
             'client-individual.'));

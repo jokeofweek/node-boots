@@ -5,7 +5,8 @@ var net = require('net'),
     Logger = require('./src/middleware/logger.js').Logger,
     SessionFactory = require('./src/sessionfactory.js').SessionFactory,
     Stomp12 = require('./src/middleware/stomp12.js').Stomp12;
-    
+
+// Set up our broker.
 var broker = new Broker(new SessionFactory(), new Stomp12());
 broker.addMiddleware(new Logger());
 broker.addMiddleware(new CommandValidator());
