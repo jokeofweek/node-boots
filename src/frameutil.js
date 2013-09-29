@@ -1,4 +1,4 @@
-var Frame = require('./Frame.js').Frame;
+var Frame = require('./frame.js').Frame;
 
 var BUFFER_TO_FRAME_TRANSFORMATIONS = [
   [/\\r/g, '\r'],
