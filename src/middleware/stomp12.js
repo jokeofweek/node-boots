@@ -112,8 +112,13 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
     }
   }
 
-  // Everything is valid, add the subscription!
-  session.addSubscription(id, subscription);
+  // Everything is valid, try to add the subscription, notifying the client
+  // if a subscription already exists with that id.
+  if (!session.addSubscription(id, subscription)) {
+    session.sendErrorFrame(
+      this._getHeaderErrorFrame(request, 'id', 
+         'Described a subscription with an ID that is already in use.'));
+  }
 };
 
 module.exports.Stomp12 = Stomp12;
