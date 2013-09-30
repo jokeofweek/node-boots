@@ -135,4 +135,19 @@ Session.prototype.addSubscription = function(subscription) {
   }
 };
 
+/**
+ * Removes a subscription from the Session.
+ * @param  {string} id The subscription id.
+ * @return {boolean} true if a subscription existed with this id and was 
+ *                        removed, else false.
+ */
+Session.prototype.removeSubscription = function(id) {
+  if (this._subscriptions[id]) {
+    this._subscriptions[id] = undefined;
+    return true;
+  } else {
+    return false;
+  }
+};
+
 module.exports.Session = Session;

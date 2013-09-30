@@ -1,3 +1,5 @@
+// TODO: Add a getHeader(key) method.
+
 /**
  * This class represents a STOMP frame.
  * @param {string} command  The command for the STOMP frame.

@@ -5,6 +5,8 @@ var sys = require('sys'),
 
 var VALID_ACK_TYPES = {'client': true, 'client-individual': true, 'auto': true};
 
+// TODO: Move subscriptions to broker.
+
 /**
  * The basic STOMP 1.2 middleware protocol. Only receives requests if the
  * client was actually connected.
@@ -12,7 +14,8 @@ var VALID_ACK_TYPES = {'client': true, 'client-individual': true, 'auto': true};
  */
 function Stomp12() {
   var commands = [
-    'SUBSCRIBE'
+    'SUBSCRIBE',
+    'UNSUBSCRIBE'
   ];
   // Map each command to the equivalent method. Currently a command's method
   // is just the command name lower cased prefixed by an underscore.
@@ -75,12 +78,9 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
   // Try to populate the subscription object.
   // Parse out required ID field.
   if (request.getHeaders()['id']) {
-    subscription['id'] = request.getHeaders('id');
+    subscription['id'] = request.getHeaders()['id'];
   } else {
     // A subscription must have an ID, so return an error.
-    console.log(request.getHeaders());
-    process.exit(0);
-    return;
     session.sendErrorFrame(
       this._getHeaderErrorFrame(request, 'id'));
     return;
@@ -100,7 +100,7 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
   // so only need to validate if it's there.
   if (request.getHeaders()['ack']) {
     if (VALID_ACK_TYPES[request.getHeaders()['ack']]) {
-      subscription['ack'] = request.getHeaders('ack');
+      subscription['ack'] = request.getHeaders()['ack'];
     } else {
       session.sendErrorFrame(
         this._getHeaderErrorFrame(request, 'ack',
@@ -118,6 +118,25 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
       this._getHeaderErrorFrame(request, 'id', 
          'Described a subscription with an ID that is already in use.'));
   }
+};
+
+/**
+ * Handles an UNSUBSCRIBE frame.
+ * @param  {Broker} broker The broker.
+ * @param  {Session} session The session that sent the frame.
+ * @param  {Frame} request The frame that was sent.
+ * @private
+ */
+Stomp12.prototype._unsubscribe = function(broker, session, request) {
+  // Make sure we have an ID header else send an error.
+  if (!request.getHeaders()['id']) {
+    session.sendErrorFrame(
+      this._getHeaderErrorFrame(request, 'id'));
+    return;
+  }
+
+  // Simply remove the subscription.
+  session.removeSubscription(request.getHeaders()['id']);
 };
 
 module.exports.Stomp12 = Stomp12;
