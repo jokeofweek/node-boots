@@ -68,7 +68,6 @@ Stomp12.prototype._getHeaderErrorFrame = function(request, header, message) {
  */
 Stomp12.prototype._subscribe = function(broker, session, request) {
   // By default a subscription has ack = auto.
-  var id;
   var subscription = {
     'ack': 'auto'
   };
@@ -76,7 +75,7 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
   // Try to populate the subscription object.
   // Parse out required ID field.
   if (request.getHeaders()['id']) {
-    id = request.getHeaders('id');
+    subscription['id'] = request.getHeaders('id');
   } else {
     // A subscription must have an ID, so return an error.
     console.log(request.getHeaders());
@@ -114,7 +113,7 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
 
   // Everything is valid, try to add the subscription, notifying the client
   // if a subscription already exists with that id.
-  if (!session.addSubscription(id, subscription)) {
+  if (!session.addSubscription(subscription)) {
     session.sendErrorFrame(
       this._getHeaderErrorFrame(request, 'id', 
          'Described a subscription with an ID that is already in use.'));

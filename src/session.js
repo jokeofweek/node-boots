@@ -121,15 +121,14 @@ Session.prototype.close = function() {
 
 /**
  * Adds a subscription to the Session.
- * @param {string} id           The ID of the subscription.
  * @param {object} subscription The object representing the subscription.
  * @return {boolean} true if the subscription was added, false if a subscription
  *                        already exists with that ID.
  */
-Session.prototype.addSubscription = function(id, subscription) {
+Session.prototype.addSubscription = function(subscription) {
   // Adds a subscription if the id doesn't already exist.
-  if (!this._subscriptions[id]) {
-    this._subscriptions[id] = subscription;
+  if (!this._subscriptions[subscription.id]) {
+    this._subscriptions[subscription.id] = subscription;
     return true;
   } else {
     return false;
