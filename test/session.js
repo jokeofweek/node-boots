@@ -18,6 +18,32 @@ module.exports = {
     test.ok(!connection.isConnected());
     test.done();
   },
+  'testSessionCloseEmitsCloseEvent': function(test) {
+    var session = new Session(new MockConnection(), '123');
+    var called = false;
+    session.on('close', function() {
+      called = true;
+    });
+    session.close();
+    test.ok(called);
+    test.done();
+  },
+  'testConnectionCloseCallsClose': function(test) {
+    var connection = new MockConnection()
+    var session = new Session(connection, '123');
+
+    var error = {k:1};
+    var called = false;
+    var receivedError = null;
+    session.on('close', function(error) {
+      called = true;
+      receivedError = error;
+    });
+    connection.emit('close', error);
+    test.ok(called);
+    test.equals(receivedError, error);
+    test.done();
+  },
   'testSessionDirectSendFrameWritesToConnection': function(test) {
     var frame = new Frame("COMMAND", {k: '1', k: '2'}, "BODY");
     var buffer = FrameUtil.buildBuffer(frame);
