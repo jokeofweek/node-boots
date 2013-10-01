@@ -32,6 +32,8 @@ function Broker(sessionFactory, middleware) {
   this._middleware = [];
   this._defaultMiddleware = [this, middleware];
 
+  this._subscriptions = {};
+
   // Listen to events.
   var self = this;
   this._sessionFactory.on('receiveData', function(session, request) {
@@ -39,6 +41,10 @@ function Broker(sessionFactory, middleware) {
   });
   this._sessionFactory.on('sendData', function(session, request, callback) {
     (self._toNextMethod('onSend'))(self, session, request, callback);
+  });
+  this._sessionFactory.on('close', function(session, error) {
+    // Remove all subscriptions
+    delete self._subscriptions[session.getId()];
   });
 };
 sys.inherits(Broker, Middleware);
@@ -185,6 +191,46 @@ Broker.prototype._processConnectionHeaders = function(frame) {
 
   // For no heart-beat, assume 0,0
   headers['heart-beat'] = headers['heart-beat'] || '0,0';
+};
+
+/**
+ * Adds a subscription for a session.
+ * @param {Session} session The session to which the subscription belongs.
+ * @param {object} subscription The subscription object.
+ * @return {boolean} true if the subscription was added, false if a subscription
+ *                        already exists with that ID.
+ */
+Broker.prototype.addSubscription = function(session, subscription) {
+  // If this is the first subscription, need to create the key 
+  // in the subscription table.
+  if (!this._subscriptions[session.getId()]) {
+    this._subscriptions[session.getId()] = {};
+  }
+  if (!this._subscriptions[session.getId()][subscription.id]) {
+    this._subscriptions[session.getId()][subscription.id] = subscription;
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/**
+ * Removes a subscription for a Session.
+ * @param  {Session} session The session to which the subscription belongs.
+ * @param  {string} id The subscription's ID.
+ * @return {boolean} true if a subscription existed with this id and was 
+ *                        removed, else false.
+ */
+Broker.prototype.removeSubscription = function(session, id) {
+  if (!this._subscriptions[session.getId()]) {
+    return false;
+  }
+  if (this._subscriptions[session.getId()][id]) {
+    this._subscriptions[session.getId()][id] = undefined;
+    return true;
+  } else {
+    return false;
+  }
 };
 
 

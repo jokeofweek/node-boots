@@ -5,6 +5,5 @@
 - src/frame.js: Add a getHeader(key) method.
 - src/frameutil.js: Allow for content-length in the buildBuffer.
 - src/frameutil.js: Should raise fatal error on undefined escape sequences.
-- src/middleware/stomp12.js: Move subscriptions to broker.
 - test/frameutil.js: More tests! 
 - test/stringbuffer.js: Test with different encodings.

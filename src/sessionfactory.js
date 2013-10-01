@@ -40,6 +40,9 @@ SessionFactory.prototype.getSession = function(connection) {
   session.on('sendData', function(request, callback) {
     self.emit('sendData', session, request, callback);
   });
+  session.on('close', function(error) {
+    self.emit('close', session, error);
+  });
   return session;
 };
 

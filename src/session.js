@@ -22,13 +22,8 @@ function Session(connection, id) {
 
   // Start out not connected.
   this._connected = false;
-
-  // Set up our set of subscriptions.
-  this._subscriptions = {};
-
+  
   this._setupListeners();
-
-  this.emit('connect');
 };
 util.inherits(Session, events.EventEmitter);
 
@@ -52,8 +47,8 @@ Session.prototype._setupListeners = function() {
   this._connection.on('error', function(error) {
     // Should dispatch to a Middleware.
   });
-  this._connection.on('close', function(hadError) {
-    // Should dispatch to a Middleware.
+  this._connection.on('close', function(error) {
+    self.close(error);
   });
 };
 
@@ -113,41 +108,13 @@ Session.prototype.directSendFrame = function(response, callback) {
 
 /**
  * Closes the session socket.
+ * @param {?object} error An optional error object.
  */
-Session.prototype.close = function() {
+Session.prototype.close = function(error) {
   this._connected = false;
   this._connection.end();
-};
-
-/**
- * Adds a subscription to the Session.
- * @param {object} subscription The object representing the subscription.
- * @return {boolean} true if the subscription was added, false if a subscription
- *                        already exists with that ID.
- */
-Session.prototype.addSubscription = function(subscription) {
-  // Adds a subscription if the id doesn't already exist.
-  if (!this._subscriptions[subscription.id]) {
-    this._subscriptions[subscription.id] = subscription;
-    return true;
-  } else {
-    return false;
-  }
-};
-
-/**
- * Removes a subscription from the Session.
- * @param  {string} id The subscription id.
- * @return {boolean} true if a subscription existed with this id and was 
- *                        removed, else false.
- */
-Session.prototype.removeSubscription = function(id) {
-  if (this._subscriptions[id]) {
-    this._subscriptions[id] = undefined;
-    return true;
-  } else {
-    return false;
-  }
+  // Emit the close event.
+  this.emit('close', error);
 };
 
 module.exports.Session = Session;

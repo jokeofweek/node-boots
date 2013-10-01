@@ -33,6 +33,14 @@ module.exports = {
       sendCallback = callback;
     });
 
+
+    var closedSession = null;
+    var closedError = null;
+    factory.on('close', function(session, error) {
+      closedSession = session;
+      closedError = error;
+    });
+
     var frame = new Frame("COMMAND",{k:'v'},"BODY");
     var aCallback = function() {
       console.log("Some callback.");
@@ -40,12 +48,15 @@ module.exports = {
 
     session.emit('receiveData', frame);
     session.emit('sendData', frame, aCallback);
+    session.emit('close', aCallback);
 
     test.equal(receivedSession, session);
     test.equal(receivedData, frame);
     test.equal(sentSession, session);
     test.equal(sentData, frame);
     test.equal(sendCallback, aCallback);
+    test.equal(closedSession, session);
+    test.equal(closedError, aCallback);
 
     test.done();
 

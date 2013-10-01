@@ -5,8 +5,6 @@ var sys = require('sys'),
 
 var VALID_ACK_TYPES = {'client': true, 'client-individual': true, 'auto': true};
 
-// TODO: Move subscriptions to broker.
-
 /**
  * The basic STOMP 1.2 middleware protocol. Only receives requests if the
  * client was actually connected.
@@ -113,7 +111,7 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
 
   // Everything is valid, try to add the subscription, notifying the client
   // if a subscription already exists with that id.
-  if (!session.addSubscription(subscription)) {
+  if (!broker.addSubscription(session, subscription)) {
     session.sendErrorFrame(
       this._getHeaderErrorFrame(request, 'id', 
          'Described a subscription with an ID that is already in use.'));
@@ -136,7 +134,7 @@ Stomp12.prototype._unsubscribe = function(broker, session, request) {
   }
 
   // Simply remove the subscription.
-  session.removeSubscription(request.getHeaders()['id']);
+  broker.removeSubscription(session, request.getHeaders()['id']);
 };
 
 module.exports.Stomp12 = Stomp12;
