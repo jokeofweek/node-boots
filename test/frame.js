@@ -24,5 +24,19 @@ module.exports = {
     frame = new Frame("SOME COMMAND.", {a:"", b:""});
     test.deepEqual(frame.getBody(), "");
     test.done();
+  },
+  'testGetHeader': function(test) {
+    var frame = new Frame("SOME COMMAND", {"a":"1", "b":"2"});
+    var tests = [
+      ['a', '1'],
+      ['b', '2'],
+      ['c', undefined],
+      ['', undefined]
+    ];
+
+    for (var i = 0; i < tests.length; i++) {
+      test.deepEqual(frame.getHeader(tests[i][0]), tests[i][1]);
+    }
+    test.done();
   }
 };

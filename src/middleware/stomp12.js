@@ -75,8 +75,8 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
 
   // Try to populate the subscription object.
   // Parse out required ID field.
-  if (request.getHeaders()['id']) {
-    subscription['id'] = request.getHeaders()['id'];
+  if (request.getHeader('id')) {
+    subscription['id'] = request.getHeader('id');
   } else {
     // A subscription must have an ID, so return an error.
     session.sendErrorFrame(
@@ -85,8 +85,8 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
   }
 
   // Parse out required destination
-  if (request.getHeaders()['destination']) {
-    subscription['destination'] = request.getHeaders()['destination'];
+  if (request.getHeader('destination')) {
+    subscription['destination'] = request.getHeader('destination');
   } else {
     // A subscription must have a destination, so return an error.
     session.sendErrorFrame(
@@ -96,9 +96,9 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
 
   // Parse out ack header, making sure it's valid. Ack is optional,
   // so only need to validate if it's there.
-  if (request.getHeaders()['ack']) {
-    if (VALID_ACK_TYPES[request.getHeaders()['ack']]) {
-      subscription['ack'] = request.getHeaders()['ack'];
+  if (request.getHeader('ack')) {
+    if (VALID_ACK_TYPES[request.getHeader('ack')]) {
+      subscription['ack'] = request.getHeader('ack');
     } else {
       session.sendErrorFrame(
         this._getHeaderErrorFrame(request, 'ack',
@@ -127,14 +127,14 @@ Stomp12.prototype._subscribe = function(broker, session, request) {
  */
 Stomp12.prototype._unsubscribe = function(broker, session, request) {
   // Make sure we have an ID header else send an error.
-  if (!request.getHeaders()['id']) {
+  if (!request.getHeader('id')) {
     session.sendErrorFrame(
       this._getHeaderErrorFrame(request, 'id'));
     return;
   }
 
   // Simply remove the subscription.
-  broker.removeSubscription(session, request.getHeaders()['id']);
+  broker.removeSubscription(session, request.getHeader('id'));
 };
 
 module.exports.Stomp12 = Stomp12;

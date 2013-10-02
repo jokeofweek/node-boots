@@ -71,7 +71,7 @@ Broker.prototype.onReceive = function(broker, session, request, next) {
       // obligatory for 1.0, so no header means 1.0. If we used STOMP, then
       // the client is 1.2.
       this._processConnectionHeaders(request);
-      if (this.canAcceptServerVersion(request.getHeaders()['accept-version'])) {
+      if (this.canAcceptServerVersion(request.getHeader('accept-version'))) {
         var connectedHeaders = {
           version: SERVER_VERSION,
           server: Config.SERVER,

@@ -1,5 +1,3 @@
-// TODO: Add a getHeader(key) method.
-
 /**
  * This class represents a STOMP frame.
  * @param {string} command  The command for the STOMP frame.
@@ -24,6 +22,16 @@ Frame.prototype.getCommand = function() {
  */
 Frame.prototype.getHeaders = function() {
   return this._headers;
+};
+
+/**
+ * Gets the header value for the given key.
+ * @param  {string} key Header key.
+ * @return {?string} The value for the header or undefined if no such header
+ *                       exists.
+ */
+Frame.prototype.getHeader = function(key) {
+  return this._headers[key];
 };
 
 /**
