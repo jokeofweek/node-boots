@@ -1,4 +1,5 @@
-var sys = require('sys'),
+var extend = require('extend'),
+    sys = require('sys'),
     Config = require('./../config.js'),
     Frame = require('./frame.js').Frame;
     Middleware = require('./middleware/middleware.js').Middleware;
@@ -207,6 +208,8 @@ Broker.prototype.addSubscription = function(session, subscription) {
     this._subscriptions[session.getId()] = {};
   }
   if (!this._subscriptions[session.getId()][subscription.id]) {
+    // Add the session to the subscription.
+    subscription['session'] = session;
     this._subscriptions[session.getId()][subscription.id] = subscription;
     return true;
   } else {
@@ -233,5 +236,68 @@ Broker.prototype.removeSubscription = function(session, id) {
   }
 };
 
+/**
+ * Processes a message that was sent from a client via SEND. At this point 
+ * the request has been validated.
+ * @param  {Session} session The sending session.
+ * @param  {Frame} request The rquest frame.
+ */
+Broker.prototype.receiveMessage = function(session, request) {
+  var destination = request.getHeader('destination');
+  var contentType = request.getHeader('content-type') || 'text/plain';
+
+  // TODO: Allow user-defined headers.
+  // Only keep headers we allow for now.
+  var sendingHeaders = this._filterHeaders(request.getHeaders(),
+      ['destination', 'content-length'],
+      true);
+
+  // Iterate through all sessions, finding sessions with a given ID.
+  for (var sessionId in this._subscriptions) {
+    for (var subscriptionId in this._subscriptions[sessionId]) {
+      // If the destination matches, send to the session.
+      var subscription = this._subscriptions[sessionId][subscriptionId];
+      if (destination == subscription['destination']) {
+        // TODO: Generate a unique message ID.
+        var headers = extend({}, sendingHeaders, {
+          'subscription': subscriptionId,
+          'message-id': '0',
+          'content-type': contentType
+        });
+        // The session is subscribed, so send the message!
+        subscription['session'].sendFrame(new Frame(
+          'MESSAGE', headers, request.getBody()
+        ));
+      }
+    }
+  }
+};
+
+/**
+ * Filters a set of headers to keep only a subset of headers.
+ * eg. _filterHeaders({'a':.., 'b':.., 'c':..}, ['a']) = {'b':.., 'c':..}
+ * 
+ * @param  {object} headers The object containing the headers.  
+ * @param  {array} filters An array containing header names to filter out.
+ * @param  {boolean?} keep If true, then we ONLY keep headers that are in the 
+ *                        filters.
+ * @return {object} The filtered headers.
+ * @private
+ */
+Broker.prototype._filterHeaders = function(headers, filters, keep) {
+  // Convert filters to an object for faster lookups.
+  var filtersObj = {};
+  for (var i = 0, l = headers.length; i < l; i++) {
+    filtersObj[headers[i]] = true;
+  }
+  // Filter the headers
+  var result = {};
+  for (var key in headers) {
+    if ((!filtersObj[key] && !keep) || (keep && filtersObj[key])) {
+      result[key] = headers[key];
+    }
+  }
+  return headers;
+};
 
 module.exports.Broker = Broker;

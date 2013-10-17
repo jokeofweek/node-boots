@@ -13,7 +13,8 @@ var VALID_ACK_TYPES = {'client': true, 'client-individual': true, 'auto': true};
 function Stomp12() {
   var commands = [
     'SUBSCRIBE',
-    'UNSUBSCRIBE'
+    'UNSUBSCRIBE',
+    'SEND'
   ];
   // Map each command to the equivalent method. Currently a command's method
   // is just the command name lower cased prefixed by an underscore.
@@ -135,6 +136,22 @@ Stomp12.prototype._unsubscribe = function(broker, session, request) {
 
   // Simply remove the subscription.
   broker.removeSubscription(session, request.getHeader('id'));
+};
+
+/**
+ * Handles a SEND frame.
+ * @param  {Broker} broker  The broker
+ * @param  {Session} session The session tat sent the frame.
+ * @param  {Frame} request The frame.
+ */
+Stomp12.prototype._send = function(broker, session, request) {
+  // Make sure we have a destination header.
+  if (!request.getHeader('destination')) {
+    session.sendErrorFrame(
+      this._getHeaderErrorFrame(request, 'destination'));
+    return;
+  }
+  broker.receiveMessage(session, request);
 };
 
 module.exports.Stomp12 = Stomp12;
