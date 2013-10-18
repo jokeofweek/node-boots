@@ -300,4 +300,4 @@ Broker.prototype._filterHeaders = function(headers, filters, keep) {
   return headers;
 };
 
-module.exports.Broker = Broker;
+module.exports = Broker;

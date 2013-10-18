@@ -1,5 +1,5 @@
 var net = require('net'),
-    Broker = require('./src/broker.js').Broker,
+    Broker = require('./src/broker.js'),
     Config = require('./config.js'),
     CommandValidator = require('./src/middleware/commandvalidator.js'),
     Logger = require('./src/middleware/logger.js'),
