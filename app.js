@@ -1,10 +1,10 @@
 var net = require('net'),
     Broker = require('./src/broker.js').Broker,
     Config = require('./config.js'),
-    CommandValidator = require('./src/middleware/commandvalidator.js').CommandValidator,
-    Logger = require('./src/middleware/logger.js').Logger,
+    CommandValidator = require('./src/middleware/commandvalidator.js'),
+    Logger = require('./src/middleware/logger.js'),
     SessionFactory = require('./src/sessionfactory.js').SessionFactory,
-    Stomp12 = require('./src/middleware/stomp12.js').Stomp12;
+    Stomp12 = require('./src/middleware/stomp12.js');
 
 // Set up our broker.
 var broker = new Broker(new SessionFactory(), new Stomp12());

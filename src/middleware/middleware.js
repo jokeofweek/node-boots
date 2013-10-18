@@ -30,4 +30,4 @@ Middleware.prototype.onSend = function(broker, session, response, callback, next
   next(broker, session, response, callback || function(){});
 };
 
-module.exports.Middleware = Middleware;
+module.exports = Middleware;

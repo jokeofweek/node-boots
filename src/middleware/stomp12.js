@@ -1,7 +1,7 @@
 var sys = require('sys'),
     Frame = require('./../frame.js'),
     FrameUtil = require('./../frameutil.js'),
-    Middleware = require('./middleware.js').Middleware;
+    Middleware = require('./middleware.js');
 
 var VALID_ACK_TYPES = {'client': true, 'client-individual': true, 'auto': true};
 
@@ -154,4 +154,4 @@ Stomp12.prototype._send = function(broker, session, request) {
   broker.receiveMessage(session, request);
 };
 
-module.exports.Stomp12 = Stomp12;
+module.exports = Stomp12;

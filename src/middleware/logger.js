@@ -1,5 +1,5 @@
 var sys = require('sys'),
-    Middleware = require('./middleware.js').Middleware;
+    Middleware = require('./middleware.js');
 
 /**
  * A basic Middleware which logs every event.
@@ -30,4 +30,4 @@ Logger.prototype.onSend = function(broker, session, request, callback, next) {
   next(broker, session, request, callback);
 };
 
-module.exports.Logger = Logger;
+module.exports = Logger;

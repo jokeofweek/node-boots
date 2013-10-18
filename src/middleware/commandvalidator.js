@@ -1,6 +1,6 @@
 var sys = require('sys'),
     Frame = require('./../frame.js'),
-    Middleware = require('./middleware.js').Middleware;
+    Middleware = require('./middleware.js');
 
 var VALID_COMMANDS = {
   'ABORT': true,
@@ -40,4 +40,4 @@ CommandValidator.prototype.onReceive = function(broker, session, request, next) 
   }
 };
 
-module.exports.CommandValidator = CommandValidator;
+module.exports = CommandValidator;

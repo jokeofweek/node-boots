@@ -2,7 +2,7 @@ var extend = require('extend'),
     sys = require('sys'),
     Config = require('./../config.js'),
     Frame = require('./frame.js');
-    Middleware = require('./middleware/middleware.js').Middleware;
+    Middleware = require('./middleware/middleware.js');
 
 var SERVER_VERSION = '1.2';
 var SERVER_VERSION_MISMATCH_FRAME = new Frame(
