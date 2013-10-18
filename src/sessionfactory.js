@@ -48,4 +48,4 @@ SessionFactory.prototype.getSession = function(connection) {
   return session;
 };
 
-module.exports.SessionFactory = SessionFactory;
+module.exports = SessionFactory;

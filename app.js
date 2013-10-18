@@ -3,7 +3,7 @@ var net = require('net'),
     Config = require('./config.js'),
     CommandValidator = require('./src/middleware/commandvalidator.js'),
     Logger = require('./src/middleware/logger.js'),
-    SessionFactory = require('./src/sessionfactory.js').SessionFactory,
+    SessionFactory = require('./src/sessionfactory.js'),
     Stomp12 = require('./src/middleware/stomp12.js');
 
 // Set up our broker.

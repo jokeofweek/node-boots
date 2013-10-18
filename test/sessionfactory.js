@@ -1,7 +1,7 @@
 var EventEmitter = require('events').EventEmitter,
     Frame = require('../src/frame.js'),
     MockConnection = require('./mock/connection.js'),
-    SessionFactory = require('../src/sessionfactory.js').SessionFactory;
+    SessionFactory = require('../src/sessionfactory.js');
 
 module.exports = {
   'testSessionFactoryAssignsDifferentIdsForNewSessions': function(test) {
