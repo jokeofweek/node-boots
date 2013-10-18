@@ -28,4 +28,6 @@ IdFactory.prototype.getId = function() {
   return id;
 };
 
-module.exports = IdFactory;
+module.exports = {
+  'IdFactory': IdFactory
+};

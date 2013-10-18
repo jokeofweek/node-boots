@@ -1,4 +1,4 @@
-var IdFactory = require('./../src/idfactory.js');
+var IdFactory = require('./../src/idfactory.js').IdFactory;
 
 module.exports = {
   'testByDefaultReturnsConsecutiveIntegers': function(test) {
