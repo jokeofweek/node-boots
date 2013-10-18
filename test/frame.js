@@ -1,4 +1,4 @@
-var Frame = require('../src/frame.js').Frame;
+var Frame = require('../src/frame.js');
 
 module.exports = {
   'testGetters': function(test) {

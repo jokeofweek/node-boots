@@ -1,7 +1,7 @@
 var extend = require('extend'),
     sys = require('sys'),
     Config = require('./../config.js'),
-    Frame = require('./frame.js').Frame;
+    Frame = require('./frame.js');
     Middleware = require('./middleware/middleware.js').Middleware;
 
 var SERVER_VERSION = '1.2';

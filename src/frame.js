@@ -41,4 +41,4 @@ Frame.prototype.getBody = function() {
   return this._body;
 };
 
-module.exports.Frame = Frame;
+module.exports = Frame;

@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
-    Frame = require('../src/frame.js').Frame,
+    Frame = require('../src/frame.js'),
     MockConnection = require('./mock/connection.js').MockConnection,
     SessionFactory = require('../src/sessionfactory.js').SessionFactory;
 

@@ -1,4 +1,4 @@
-var Frame = require('../src/frame.js').Frame,
+var Frame = require('../src/frame.js'),
     FrameUtil = require('../src/frameutil.js'),
     StringBuffer = require('../src/stringbuffer.js').StringBuffer;
 

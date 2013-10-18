@@ -1,4 +1,4 @@
-var Frame = require('./../src/frame.js').Frame,
+var Frame = require('./../src/frame.js'),
     FrameUtil = require('./../src/frameutil.js'),
     MockConnection = require('./mock/connection.js').MockConnection,
     Session = require('./../src/session.js').Session;

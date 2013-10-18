@@ -1,5 +1,5 @@
 var sys = require('sys'),
-    Frame = require('./../frame.js').Frame,
+    Frame = require('./../frame.js'),
     Middleware = require('./middleware.js').Middleware;
 
 var VALID_COMMANDS = {
