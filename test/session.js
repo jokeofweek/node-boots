@@ -1,6 +1,6 @@
 var Frame = require('./../src/frame.js'),
     FrameUtil = require('./../src/frameutil.js'),
-    MockConnection = require('./mock/connection.js').MockConnection,
+    MockConnection = require('./mock/connection.js'),
     Session = require('./../src/session.js').Session;
 
 module.exports = {

@@ -1,6 +1,6 @@
 var EventEmitter = require('events').EventEmitter,
     Frame = require('../src/frame.js'),
-    MockConnection = require('./mock/connection.js').MockConnection,
+    MockConnection = require('./mock/connection.js'),
     SessionFactory = require('../src/sessionfactory.js').SessionFactory;
 
 module.exports = {

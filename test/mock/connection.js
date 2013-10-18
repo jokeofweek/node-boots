@@ -31,4 +31,4 @@ MockConnection.prototype.isConnected = function() {
   return this._connected;
 };
 
-module.exports.MockConnection = MockConnection;
+module.exports = MockConnection;
