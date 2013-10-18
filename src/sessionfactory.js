@@ -1,5 +1,6 @@
 var sys = require('sys'),
-    EventEmitter = require('events').EventEmitter;
+    EventEmitter = require('events').EventEmitter,
+    IdFactory = require('./idfactory.js'),
     Session = require('./session.js').Session,
     SHA256 = require('crypto-js/sha256');
 
@@ -13,11 +14,13 @@ function SessionFactory() {
   EventEmitter.call(this);
 
   // Salt to apply for each session ID.
-  this._salt = 'fdDZ*%gfd0gk043g0rDSflg43.t43.r/23./.1423;' + process.pid +
+  var salt = 'fdDZ*%gfd0gk043g0rDSflg43.t43.r/23./.1423;' + process.pid +
     Math.random() + (new Date());
 
-  // Counter to increment for each session.
-  this._sessionId = 1;
+  // Create the ID factory.
+  this._idFactory = new IdFactory(function(id) {
+    return SHA256(salt + id).toString();
+  });
 };
 sys.inherits(SessionFactory, EventEmitter);
 
@@ -29,8 +32,7 @@ sys.inherits(SessionFactory, EventEmitter);
  */
 SessionFactory.prototype.getSession = function(connection) {
   var id = this._sessionId++;
-  var session = new Session(connection, 
-      SHA256(this._salt + this._sessionId).toString());
+  var session = new Session(connection, this._idFactory.getId());
 
   // Setup events.
   var self = this;

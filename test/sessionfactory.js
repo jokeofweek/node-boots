@@ -8,7 +8,12 @@ module.exports = {
     var factory = new SessionFactory();
     var session1 = factory.getSession(new MockConnection());
     var session2 = factory.getSession(new MockConnection());
+    var session3 = factory.getSession(new MockConnection());
     test.ok(session1.getId() != session2.getId(),
+        "SessionFactory should not re-use session IDs.");
+    test.ok(session2.getId() != session3.getId(),
+        "SessionFactory should not re-use session IDs.");
+    test.ok(session1.getId() != session3.getId(),
         "SessionFactory should not re-use session IDs.");
     test.done();
   },
