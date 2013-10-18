@@ -117,4 +117,4 @@ Session.prototype.close = function(error) {
   this.emit('close', error);
 };
 
-module.exports.Session = Session;
+module.exports = Session;

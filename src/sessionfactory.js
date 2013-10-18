@@ -1,7 +1,7 @@
 var sys = require('sys'),
     EventEmitter = require('events').EventEmitter,
     IdFactory = require('./idfactory.js'),
-    Session = require('./session.js').Session,
+    Session = require('./session.js'),
     SHA256 = require('crypto-js/sha256');
 
 /**

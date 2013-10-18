@@ -1,7 +1,7 @@
 var Frame = require('./../src/frame.js'),
     FrameUtil = require('./../src/frameutil.js'),
     MockConnection = require('./mock/connection.js'),
-    Session = require('./../src/session.js').Session;
+    Session = require('./../src/session.js');
 
 module.exports = {
   'testSessionGetIdReturnsId': function(test) {
