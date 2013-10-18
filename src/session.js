@@ -1,7 +1,7 @@
 var events = require('events'),
     util = require('util'),
     FrameUtil = require('./frameutil.js'),
-    StringBuffer = require('./stringbuffer.js').StringBuffer;
+    StringBuffer = require('./stringbuffer.js');
 
 /**
  * This class represents a client session.

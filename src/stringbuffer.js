@@ -56,4 +56,4 @@ StringBuffer.prototype.trimFront = function(characters) {
   this._length -= characters;
 };
 
-module.exports.StringBuffer = StringBuffer;
+module.exports = StringBuffer;

@@ -1,4 +1,4 @@
-var StringBuffer = require('../src/stringbuffer.js').StringBuffer;
+var StringBuffer = require('../src/stringbuffer.js');
 
 // TODO: Test with different encodings.
 
