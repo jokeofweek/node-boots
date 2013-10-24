@@ -14,7 +14,8 @@ function Stomp12() {
   var commands = [
     'SUBSCRIBE',
     'UNSUBSCRIBE',
-    'SEND'
+    'SEND',
+    'DISCONNECT'
   ];
   // Map each command to the equivalent method. Currently a command's method
   // is just the command name lower cased prefixed by an underscore.
@@ -152,6 +153,18 @@ Stomp12.prototype._send = function(broker, session, request) {
     return;
   }
   broker.receiveMessage(session, request);
+};
+
+
+/**
+ * Handles a DISCONNECT frame.
+ * @param  {Broker} broker  The broker
+ * @param  {Session} session The session tat sent the frame.
+ * @param  {Frame} request The frame.
+ */
+Stomp12.prototype._disconnect = function(broker, session, request) {
+  // Close the session.
+  session.close();
 };
 
 module.exports = Stomp12;
