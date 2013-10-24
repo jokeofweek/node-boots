@@ -1,7 +1,8 @@
 var extend = require('extend'),
     sys = require('sys'),
     Config = require('./../config.js'),
-    Frame = require('./frame.js');
+    Frame = require('./frame.js'),
+    IdFactory = require('./idfactory.js'),
     Middleware = require('./middleware/middleware.js');
 
 var SERVER_VERSION = '1.2';
@@ -34,6 +35,9 @@ function Broker(sessionFactory, middleware) {
   this._defaultMiddleware = [this, middleware];
 
   this._subscriptions = {};
+
+  // Create the ID factory for sending to clients.
+  this._sendIdFactory = new IdFactory();
 
   // Listen to events.
   var self = this;
@@ -258,10 +262,9 @@ Broker.prototype.receiveMessage = function(session, request) {
       // If the destination matches, send to the session.
       var subscription = this._subscriptions[sessionId][subscriptionId];
       if (destination == subscription['destination']) {
-        // TODO: Generate a unique message ID.
         var headers = extend({}, sendingHeaders, {
           'subscription': subscriptionId,
-          'message-id': '0',
+          'message-id': this._sendIdFactory.getId(),
           'content-type': contentType
         });
         // The session is subscribed, so send the message!
