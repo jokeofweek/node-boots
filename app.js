@@ -3,6 +3,7 @@ var net = require('net'),
     Config = require('./config.js'),
     CommandValidator = require('./src/middleware/commandvalidator.js'),
     Logger = require('./src/middleware/logger.js'),
+    ReceiptHandler = require('./src/middleware/receipthandler.js'),
     SessionFactory = require('./src/sessionfactory.js'),
     Stomp12 = require('./src/middleware/stomp12.js');
 
@@ -10,6 +11,7 @@ var net = require('net'),
 var broker = new Broker(new SessionFactory(), new Stomp12());
 broker.addMiddleware(new Logger());
 broker.addMiddleware(new CommandValidator());
+broker.addMiddleware(new ReceiptHandler());
 
 // Set up our server and listen.
 var server = net.createServer(broker.getSessionBuilder());
